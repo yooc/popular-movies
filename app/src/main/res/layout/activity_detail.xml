@@ -6,18 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".DetailActivity">
 
-    <ImageView
-        android:id="@+id/moviePoster_iv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <TextView
         android:id="@+id/movieTitle_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/synopsis_tv"
+    <ImageView
+        android:id="@+id/moviePoster_iv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -28,6 +23,11 @@
 
     <TextView
         android:id="@+id/releaseDate_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/synopsis_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
