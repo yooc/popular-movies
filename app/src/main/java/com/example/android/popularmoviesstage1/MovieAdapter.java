@@ -2,7 +2,6 @@ package com.example.android.popularmoviesstage1;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        Picasso.get().load(mMovieData[position]).into(holder.mPosterImageView);
+        Picasso
+                .with(holder.mPosterImageView.getContext())
+                .load(mMovieData[position])
+                .into(holder.mPosterImageView);
     }
 
     @Override
