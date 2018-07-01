@@ -11,9 +11,14 @@ import com.squareup.picasso.Picasso;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
     private String[] mMovieData;
+    final private MovieAdapterOnClickHandler mClickHandler;
 
-    public MovieAdapter() {
-        mMovieData = new String[0];
+    public interface MovieAdapterOnClickHandler {
+        void onClick(String s);
+    }
+
+    public MovieAdapter(MovieAdapterOnClickHandler clickHandler) {
+        mClickHandler = clickHandler;
     }
 
     @Override
@@ -21,8 +26,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         Context context = parent.getContext();
         int movieListItemLayout = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
-
-        View view = inflater.inflate(movieListItemLayout, parent);
+        View view = inflater.inflate(movieListItemLayout, null);
         MovieAdapterViewHolder viewHolder = new MovieAdapterViewHolder(view);
 
         return viewHolder;
@@ -49,12 +53,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         notifyDataSetChanged();
     }
 
-    class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
+    class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView mPosterImageView;
 
         public MovieAdapterViewHolder(View view) {
             super(view);
             mPosterImageView = view.findViewById(R.id.posterThumbnail_iv);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            String selectedMovie = mMovieData[position];
+            mClickHandler.onClick(selectedMovie);
         }
     }
 }
