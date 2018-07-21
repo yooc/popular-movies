@@ -10,11 +10,13 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class NetworkUtils {
-    private static final String BASE_URL = "https://api.themoviedb.org/3/movie";
+    private static final String BASE_URL = "https://api.themoviedb.org/3/movie/top_rated";
+    private static final String API_KEY = "";
 
     public static URL buildURL() {
         //Build Uri based on whether is sorting type, get poster, etc
         Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+                .appendQueryParameter("api_key", API_KEY)
                 .build();
 
         URL url = null;
