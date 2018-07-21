@@ -9,12 +9,18 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
-    private String[] mMovieData;
+    private Movie[] mMovieData;
     final private MovieAdapterOnClickHandler mClickHandler;
 
     public interface MovieAdapterOnClickHandler {
-        void onClick(String s);
+        void onClick(Movie movie);
     }
 
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler) {
@@ -49,8 +55,27 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mMovieData.length;
     }
 
-    public void setmMovieData(String[] data) {
-        this.mMovieData = data;
+    public void setMovieData(String[] data) throws JSONException{
+        //Null pointer here
+        JSONObject networkCallReponseJson = new JSONObject(data[0]);
+        JSONArray movieArray = networkCallReponseJson.getJSONArray("results");
+
+        Movie[] movieData = new Movie[movieArray.length()];
+
+        for (int i = 0; i < movieArray.length(); i++) {
+            JSONObject currentMovie = movieArray.getJSONObject(i);
+            String title = currentMovie.getString("title");
+            String posterPath = currentMovie.getString("poster_path");
+            String synopsis = currentMovie.getString("overview");
+            String releaseDate = currentMovie.getString("release_date");
+            float rating = (float) currentMovie.getDouble("vote_average");
+
+            Movie movieToAdd = new Movie(title, posterPath, synopsis, releaseDate, rating);
+
+            movieData[i] = movieToAdd;
+        }
+
+        this.mMovieData = movieData;
         notifyDataSetChanged();
     }
 
@@ -66,7 +91,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            String selectedMovie = mMovieData[position];
+            Movie selectedMovie = mMovieData[position];
             mClickHandler.onClick(selectedMovie);
         }
     }

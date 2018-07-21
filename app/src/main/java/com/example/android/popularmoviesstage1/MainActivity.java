@@ -1,15 +1,15 @@
 package com.example.android.popularmoviesstage1;
 
-import android.graphics.Movie;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.Toast;
+        import android.os.AsyncTask;
+        import android.support.v7.app.AppCompatActivity;
+        import android.os.Bundle;
+        import android.support.v7.widget.LinearLayoutManager;
+        import android.support.v7.widget.RecyclerView;
+        import android.widget.Toast;
 
-import java.net.URL;
+        import org.json.JSONException;
+
+        import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler{
 
@@ -28,20 +28,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setHasFixedSize(true);
 
         mMovieAdapter = new MovieAdapter(this);
-        mMovieAdapter.setmMovieData(new String[]
-                {
-                        "https://kraftmint.com/wp-content/uploads/2015/07/phone_wallpaper.jpg",
-                        "https://freshmommyblog.com/wp-content/uploads/2015/01/Youve-Got-This-Phone-Background-from-Fresh-Mommy-Blog.jpg"
-                });
         mRecyclerView.setAdapter(mMovieAdapter);
 
-        new FetchMovieDataTask().execute("Hello");
+        new FetchMovieDataTask().execute();
     }
 
     @Override
-    public void onClick(String s) {
+    public void onClick(Movie movie) {
         Toast t = new Toast(this);
-        String toastText = s;
+        String toastText = movie.getmTitle();
         t.setText(toastText);
         t.show();
     }
@@ -54,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 return null;
             }
 
-            String location = strings[0];
             URL requestUrl = NetworkUtils.buildURL();
 
             try {
@@ -66,6 +60,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String[] strings) {
+            try {
+                mMovieAdapter.setMovieData(strings);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
