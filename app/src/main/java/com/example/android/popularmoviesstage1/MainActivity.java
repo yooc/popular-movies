@@ -1,15 +1,15 @@
 package com.example.android.popularmoviesstage1;
 
-        import android.os.AsyncTask;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.support.v7.widget.LinearLayoutManager;
-        import android.support.v7.widget.RecyclerView;
-        import android.widget.Toast;
+import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
-        import org.json.JSONException;
+import org.json.JSONException;
 
-        import java.net.URL;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler{
 
@@ -35,9 +35,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onClick(Movie movie) {
-        Toast t = new Toast(this);
         String toastText = movie.getmTitle();
-        t.setText(toastText);
+        Toast t = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
         t.show();
     }
 
@@ -45,10 +44,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         @Override
         protected String[] doInBackground(String... strings) {
-            if (strings.length == 0) {
-                return null;
-            }
-
             URL requestUrl = NetworkUtils.buildURL();
 
             try {
@@ -64,9 +59,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         @Override
-        protected void onPostExecute(String[] strings) {
+        protected void onPostExecute(String[] result) {
             try {
-                mMovieAdapter.setMovieData(strings);
+                mMovieAdapter.setMovieData(result);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
