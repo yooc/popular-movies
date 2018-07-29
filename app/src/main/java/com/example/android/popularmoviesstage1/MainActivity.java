@@ -1,5 +1,7 @@
 package com.example.android.popularmoviesstage1;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,9 +37,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onClick(Movie movie) {
-        String toastText = movie.getmTitle();
-        Toast t = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
-        t.show();
+        Context context = this;
+        Class destinationActivity = DetailActivity.class;
+        Intent intentToStartDetailActivity = new Intent(context, destinationActivity);
+        startActivity(intentToStartDetailActivity);
     }
 
     public class FetchMovieDataTask extends AsyncTask<String, Void, String[]> {

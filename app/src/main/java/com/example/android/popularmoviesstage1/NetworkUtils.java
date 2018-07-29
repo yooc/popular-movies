@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class NetworkUtils {
     private static final String BASE_URL = "https://api.themoviedb.org/3/movie/top_rated";
-    private static final String API_KEY = "";
+    private static final String API_KEY = "71de7568f78569135d157c3157784c55";
 
     public static URL buildURL() {
         //Build Uri based on whether is sorting type, get poster, etc
