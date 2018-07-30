@@ -1,6 +1,9 @@
 package com.example.android.popularmoviesstage1;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,9 +38,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onClick(Movie movie) {
-        String toastText = movie.getmTitle();
-        Toast t = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
-        t.show();
+        Context context = this;
+        Class destinationActivity = DetailActivity.class;
+        Intent intent = new Intent(context, destinationActivity);
+
+        // Check intent initialization
+        intent
+                .putExtra("title", movie.getmTitle())
+                .putExtra("rating", movie.getmRating())
+                .putExtra("releaseDate", movie.getmReleaseDate())
+                .putExtra("synopsis", movie.getmSynopsis())
+                .putExtra("poster", movie.getmMoviePoster());
+
+        startActivity(intent);
     }
 
     public class FetchMovieDataTask extends AsyncTask<String, Void, String[]> {

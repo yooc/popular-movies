@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
+
     private Movie[] mMovieData;
     final private MovieAdapterOnClickHandler mClickHandler;
 
