@@ -10,12 +10,22 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class NetworkUtils {
-    private static final String BASE_URL = "https://api.themoviedb.org/3/movie/top_rated";
-    private static final String API_KEY = "";
+    private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
+    private static final String BY_POPULARITY = "popular";
+    private static final String BY_RATING = "top_rated";
+    private static final String API_KEY = "71de7568f78569135d157c3157784c55";
 
-    public static URL buildURL() {
+    public static URL buildURL(Boolean filterByRating) {
         //Build Uri based on whether is sorting type, get poster, etc
-        Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+        String filterURL;
+
+        if (filterByRating) {
+            filterURL = BASE_URL + BY_RATING;
+        } else {
+            filterURL = BASE_URL + BY_POPULARITY;
+        }
+
+        Uri builtUri = Uri.parse(filterURL).buildUpon()
                 .appendQueryParameter("api_key", API_KEY)
                 .build();
 

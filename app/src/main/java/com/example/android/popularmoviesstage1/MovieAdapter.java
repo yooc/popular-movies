@@ -41,7 +41,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         Picasso
                 .with(holder.mPosterImageView.getContext())
-                .load("http://image.tmdb.org/t/p/" + "w185/" +mMovieData[position].getmMoviePoster())
+                .load("http://image.tmdb.org/t/p/" + "w154/" +mMovieData[position].getmMoviePoster())
                 .error(R.drawable.ic_launcher_foreground)
                 .into(holder.mPosterImageView);
     }

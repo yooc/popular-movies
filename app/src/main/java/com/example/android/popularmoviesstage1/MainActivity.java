@@ -6,8 +6,11 @@ import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -17,7 +20,10 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler{
 
     private RecyclerView mRecyclerView;
+    private Switch mSwitch;
     private MovieAdapter mMovieAdapter;
+
+    Boolean sortByRating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +31,30 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
 
         mRecyclerView = findViewById(R.id.recyclerview_movie);
+        mSwitch = findViewById(R.id.filter_switch);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        sortByRating = mSwitch.isChecked();
+
+        mSwitch.setOnCheckedChangeListener( new Switch.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                fetchMovies(isChecked);
+            }
+        });
+
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
-        new FetchMovieDataTask().execute();
+        fetchMovies(sortByRating);
+    }
+
+    private void fetchMovies(Boolean isChecked) {
+        new FetchMovieDataTask().execute(isChecked);
     }
 
     @Override
@@ -53,11 +74,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(intent);
     }
 
-    public class FetchMovieDataTask extends AsyncTask<String, Void, String[]> {
+    public class FetchMovieDataTask extends AsyncTask<Boolean, Void, String[]> {
 
         @Override
-        protected String[] doInBackground(String... strings) {
-            URL requestUrl = NetworkUtils.buildURL();
+        protected String[] doInBackground(Boolean... booleans) {
+            if (booleans.length == 0) return null;
+            Boolean filterByRating = booleans[0];
+
+            URL requestUrl = NetworkUtils.buildURL(filterByRating);
 
             try {
                 String jsonResponse = NetworkUtils
