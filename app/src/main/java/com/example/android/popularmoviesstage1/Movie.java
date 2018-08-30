@@ -1,8 +1,11 @@
 package com.example.android.popularmoviesstage1;
 
-public class Movie {
-    public final String mTitle, mMoviePoster, mSynopsis, mReleaseDate;
-    public final float mRating;
+class Movie {
+    private final String mTitle;
+    private final String mMoviePoster;
+    private final String mSynopsis;
+    private final String mReleaseDate;
+    private final float mRating;
 
     public Movie(String mTitle, String mMoviePoster, String mSynopsis, String mReleaseDate, float mRating) {
         this.mTitle = mTitle;

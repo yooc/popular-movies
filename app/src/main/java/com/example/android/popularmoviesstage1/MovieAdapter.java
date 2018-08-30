@@ -32,9 +32,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         int movieListItemLayout = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(movieListItemLayout, null);
-        MovieAdapterViewHolder viewHolder = new MovieAdapterViewHolder(view);
 
-        return viewHolder;
+        return new MovieAdapterViewHolder(view);
     }
 
     @Override
@@ -55,8 +54,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
     public void setMovieData(String[] data) throws JSONException {
-        JSONObject networkCallReponseJson = new JSONObject(data[0]);
-        JSONArray movieArray = networkCallReponseJson.getJSONArray("results");
+        JSONObject networkCallResponseJson = new JSONObject(data[0]);
+        JSONArray movieArray = networkCallResponseJson.getJSONArray("results");
 
         Movie[] movieData = new Movie[movieArray.length()];
 

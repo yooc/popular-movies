@@ -18,9 +18,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private RecyclerView mRecyclerView;
     private Switch mSwitch;
-    private MovieAdapter mMovieAdapter;
+    private static MovieAdapter mMovieAdapter;
 
-    Boolean sortByRating;
+    private Boolean sortByRating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(intent);
     }
 
-    public class FetchMovieDataTask extends AsyncTask<Boolean, Void, String[]> {
+    public static class FetchMovieDataTask extends AsyncTask<Boolean, Void, String[]> {
 
         @Override
         protected String[] doInBackground(Boolean... booleans) {

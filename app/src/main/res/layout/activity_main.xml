@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <Switch
         android:id="@+id/filter_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
+        android:layout_marginBottom="8dp"
+        android:showText="true"
         android:text="Filter By"
         android:textOff="Popularity"
-        android:textOn="Rating"
-        android:showText="true"/>
+        android:textOn="Rating" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_movie"
