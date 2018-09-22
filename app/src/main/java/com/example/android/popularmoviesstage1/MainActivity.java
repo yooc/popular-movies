@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -46,7 +47,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
-        fetchMovies(sortByRating);
+        if(NetworkUtils.isNetworkAvailable(this)) {
+            fetchMovies(sortByRating);
+        } else {
+            Toast.makeText(this, "No network available.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void fetchMovies(Boolean isChecked) {
@@ -59,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Class destinationActivity = DetailActivity.class;
         Intent intent = new Intent(context, destinationActivity);
 
-        // Check intent initialization
         intent
                 .putExtra("title", movie.getmTitle())
                 .putExtra("rating", movie.getmRating())
