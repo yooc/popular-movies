@@ -1,5 +1,8 @@
 package com.example.android.popularmoviesstage1;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 
 import java.io.IOException;
@@ -58,4 +61,9 @@ class NetworkUtils {
         }
     }
 
+    public static Boolean isNetworkAvailable(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        return info != null && info.isConnected();
+    }
 }
