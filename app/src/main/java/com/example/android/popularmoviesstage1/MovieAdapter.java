@@ -32,16 +32,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         int movieListItemLayout = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(movieListItemLayout, null);
-        MovieAdapterViewHolder viewHolder = new MovieAdapterViewHolder(view);
 
-        return viewHolder;
+        return new MovieAdapterViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         Picasso
                 .with(holder.mPosterImageView.getContext())
-                .load("http://image.tmdb.org/t/p/" + "w185/" +mMovieData[position].getmMoviePoster())
+                .load("http://image.tmdb.org/t/p/" + "w154/" + mMovieData[position].getmMoviePoster())
                 .error(R.drawable.ic_launcher_foreground)
                 .into(holder.mPosterImageView);
     }
@@ -54,9 +53,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mMovieData.length;
     }
 
-    public void setMovieData(String[] data) throws JSONException{
-        JSONObject networkCallReponseJson = new JSONObject(data[0]);
-        JSONArray movieArray = networkCallReponseJson.getJSONArray("results");
+    public void setMovieData(String[] data) throws JSONException {
+        JSONObject networkCallResponseJson = new JSONObject(data[0]);
+        JSONArray movieArray = networkCallResponseJson.getJSONArray("results");
 
         Movie[] movieData = new Movie[movieArray.length()];
 

@@ -1,4 +1,3 @@
 <resources>
     <string name="app_name">Popular Movies Stage 1</string>
-    <string name="api_key">Your API key</string>
 </resources>
