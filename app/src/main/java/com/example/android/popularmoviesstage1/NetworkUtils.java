@@ -16,7 +16,7 @@ class NetworkUtils {
     private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
     private static final String BY_POPULARITY = "popular";
     private static final String BY_RATING = "top_rated";
-    private static final String API_KEY = "";
+    private static final String API_KEY = BuildConfig.TMDB_API_KEY;
 
     public static URL buildURL(Boolean filterByRating) {
         //Build Uri based on whether is sorting type, get poster, etc
