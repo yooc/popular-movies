@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Rating: " />
+            android:text="@string/rating_label" />
 
         <TextView
             android:id="@+id/rating_tv"
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Release Date: " />
+            android:text="@string/release_date_label" />
 
         <TextView
             android:id="@+id/releaseDate_tv"
@@ -76,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Trailers"
+            android:text="@string/trailers_label"
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -87,7 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Reviews"
+        android:text="@string/reviews_label"
         android:textSize="15sp"
         android:textStyle="bold" />
 
