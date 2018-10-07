@@ -3,6 +3,7 @@ package com.example.android.popularmoviesstage1;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +13,8 @@ public class DetailActivity extends AppCompatActivity {
 
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
+    private RecyclerView mRecyclerView;
+    private static ReviewAdapter mReviewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,5 +41,10 @@ public class DetailActivity extends AppCompatActivity {
                 .load("http://image.tmdb.org/t/p/" + "w185/" + intent.getStringExtra("poster"))
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
+
+        mRecyclerView = findViewById(R.id.recyclerview_review);
+
+        mReviewAdapter = new ReviewAdapter();
+        mRecyclerView.setAdapter(mReviewAdapter);
     }
 }
