@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Intent intent = new Intent(context, destinationActivity);
 
         intent
+                .putExtra("id", movie.getmId())
                 .putExtra("title", movie.getmTitle())
                 .putExtra("rating", movie.getmRating())
                 .putExtra("releaseDate", movie.getmReleaseDate())
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             if (booleans.length == 0) return null;
             Boolean filterByRating = booleans[0];
 
-            URL requestUrl = NetworkUtils.buildURL(filterByRating);
+            URL requestUrl = NetworkUtils.buildListURL(filterByRating);
 
             try {
                 String jsonResponse = NetworkUtils

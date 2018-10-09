@@ -25,7 +25,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
     }
 
     @Override
-    public void onBindViewHolder(ReviewAdapterViewHolder holder, int position) {}
+    public void onBindViewHolder(ReviewAdapterViewHolder holder, int position) {
+        holder.mAuthorTextView.setText(mReviewData[position].getmAuthor());
+        holder.mContentTextView.setText(mReviewData[position].getmContent());
+    }
 
     @Override
     public int getItemCount() {

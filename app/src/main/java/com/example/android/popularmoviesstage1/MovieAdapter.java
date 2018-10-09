@@ -61,13 +61,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         for (int i = 0; i < movieArray.length(); i++) {
             JSONObject currentMovie = movieArray.getJSONObject(i);
+            int id = currentMovie.getInt("id");
             String title = currentMovie.getString("title");
             String posterPath = currentMovie.getString("poster_path");
             String synopsis = currentMovie.getString("overview");
             String releaseDate = currentMovie.getString("release_date");
             float rating = (float) currentMovie.getDouble("vote_average");
 
-            Movie movieToAdd = new Movie(title, posterPath, synopsis, releaseDate, rating);
+            Movie movieToAdd = new Movie(id, title, posterPath, synopsis, releaseDate, rating);
 
             movieData[i] = movieToAdd;
         }

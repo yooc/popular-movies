@@ -16,9 +16,10 @@ class NetworkUtils {
     private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
     private static final String BY_POPULARITY = "popular";
     private static final String BY_RATING = "top_rated";
+    private static final String REVIEWS_URL = "reviews";
     private static final String API_KEY = BuildConfig.TMDB_API_KEY;
 
-    public static URL buildURL(Boolean filterByRating) {
+    public static URL buildListURL(Boolean filterByRating) {
         //Build Uri based on whether is sorting type, get poster, etc
         String filterURL;
 
@@ -26,6 +27,30 @@ class NetworkUtils {
             filterURL = BASE_URL + BY_RATING;
         } else {
             filterURL = BASE_URL + BY_POPULARITY;
+        }
+
+        Uri builtUri = Uri.parse(filterURL).buildUpon()
+                .appendQueryParameter("api_key", API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    public static URL buildReviewURL(int movieId) {
+        //Build Uri to get a movie's reviews
+        String filterURL;
+
+        if (movieId == 0) {
+            return null;
+        } else {
+            filterURL = BASE_URL + Integer.toString(movieId) + "/" + REVIEWS_URL;
         }
 
         Uri builtUri = Uri.parse(filterURL).buildUpon()
