@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +20,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
-    private RecyclerView mRecyclerView;
+    private RecyclerView mReviewRecyclerView;
     private static ReviewAdapter mReviewAdapter;
 
     @Override
@@ -48,10 +49,12 @@ public class DetailActivity extends AppCompatActivity {
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
-        mRecyclerView = findViewById(R.id.recyclerview_review);
+        mReviewRecyclerView = findViewById(R.id.recyclerview_review);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        mReviewRecyclerView.setLayoutManager(manager);
 
         mReviewAdapter = new ReviewAdapter();
-        mRecyclerView.setAdapter(mReviewAdapter);
+        mReviewRecyclerView.setAdapter(mReviewAdapter);
 
         if(NetworkUtils.isNetworkAvailable(this)) {
             fetchReviews(intent.getIntExtra("id", 0));

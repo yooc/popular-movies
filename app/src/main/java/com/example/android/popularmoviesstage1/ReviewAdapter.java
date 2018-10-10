@@ -59,9 +59,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
     }
 
     class ReviewAdapterViewHolder extends RecyclerView.ViewHolder {
-        public final TextView mAuthorTextView, mContentTextView;
+        final TextView mAuthorTextView, mContentTextView;
 
-        public ReviewAdapterViewHolder(View view) {
+        ReviewAdapterViewHolder(View view) {
             super(view);
             mAuthorTextView = view.findViewById(R.id.author_tv);
             mContentTextView = view.findViewById(R.id.content_tv);

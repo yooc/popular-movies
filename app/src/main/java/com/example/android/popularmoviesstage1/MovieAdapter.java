@@ -78,9 +78,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final ImageView mPosterImageView;
+        final ImageView mPosterImageView;
 
-        public MovieAdapterViewHolder(View view) {
+        MovieAdapterViewHolder(View view) {
             super(view);
             mPosterImageView = view.findViewById(R.id.posterThumbnail_iv);
             view.setOnClickListener(this);

@@ -19,7 +19,7 @@ class NetworkUtils {
     private static final String REVIEWS_URL = "reviews";
     private static final String API_KEY = BuildConfig.TMDB_API_KEY;
 
-    public static URL buildListURL(Boolean filterByRating) {
+    static URL buildListURL(Boolean filterByRating) {
         //Build Uri based on whether is sorting type, get poster, etc
         String filterURL;
 
@@ -43,7 +43,7 @@ class NetworkUtils {
         return url;
     }
 
-    public static URL buildReviewURL(int movieId) {
+    static URL buildReviewURL(int movieId) {
         //Build Uri to get a movie's reviews
         String filterURL;
 
@@ -67,7 +67,7 @@ class NetworkUtils {
         return url;
     }
 
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
+    static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();
@@ -86,7 +86,7 @@ class NetworkUtils {
         }
     }
 
-    public static Boolean isNetworkAvailable(Context context) {
+    static Boolean isNetworkAvailable(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = manager.getActiveNetworkInfo();
         return info != null && info.isConnected();
