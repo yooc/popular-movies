@@ -17,6 +17,7 @@ class NetworkUtils {
     private static final String BY_POPULARITY = "popular";
     private static final String BY_RATING = "top_rated";
     private static final String REVIEWS_URL = "reviews";
+    private static final String TRAILERS_URL = "videos";
     private static final String API_KEY = BuildConfig.TMDB_API_KEY;
 
     static URL buildListURL(Boolean filterByRating) {
@@ -43,17 +44,41 @@ class NetworkUtils {
         return url;
     }
 
-    static URL buildReviewURL(int movieId) {
+    static URL buildReviewsURL(int movieId) {
         //Build Uri to get a movie's reviews
-        String filterURL;
+        String reviewURL;
 
         if (movieId == 0) {
             return null;
         } else {
-            filterURL = BASE_URL + Integer.toString(movieId) + "/" + REVIEWS_URL;
+            reviewURL = BASE_URL + Integer.toString(movieId) + "/" + REVIEWS_URL;
         }
 
-        Uri builtUri = Uri.parse(filterURL).buildUpon()
+        Uri builtUri = Uri.parse(reviewURL).buildUpon()
+                .appendQueryParameter("api_key", API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    static URL buildTrailersURL(int movieId) {
+        //Build Uri to get a movie's trailers
+        String trailerURL;
+
+        if (movieId == 0) {
+            return null;
+        } else {
+            trailerURL = BASE_URL + Integer.toString(movieId) + "/" + TRAILERS_URL;
+        }
+
+        Uri builtUri = Uri.parse(trailerURL).buildUpon()
                 .appendQueryParameter("api_key", API_KEY)
                 .build();
 

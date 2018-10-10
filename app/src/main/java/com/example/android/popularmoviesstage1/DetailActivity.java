@@ -16,12 +16,13 @@ import org.json.JSONException;
 
 import java.net.URL;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
-    private RecyclerView mReviewRecyclerView;
+    private RecyclerView mReviewRecyclerView, mTrailerRecyclerView;
     private static ReviewAdapter mReviewAdapter;
+    private static TrailerAdapter mTrailerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,32 +50,49 @@ public class DetailActivity extends AppCompatActivity {
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
-        mReviewRecyclerView = findViewById(R.id.recyclerview_review);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        mReviewRecyclerView.setLayoutManager(manager);
-
+        mReviewRecyclerView = findViewById(R.id.reviews_rv);
+        LinearLayoutManager reviewsManager = new LinearLayoutManager(this);
+        mReviewRecyclerView.setLayoutManager(reviewsManager);
         mReviewAdapter = new ReviewAdapter();
         mReviewRecyclerView.setAdapter(mReviewAdapter);
+        mReviewRecyclerView.setNestedScrollingEnabled(false);
+
+        mTrailerRecyclerView = findViewById(R.id.trailers_rv);
+        LinearLayoutManager trailersManager = new LinearLayoutManager(this);
+        mTrailerRecyclerView.setLayoutManager(trailersManager);
+        mTrailerAdapter = new TrailerAdapter(this);
+        mTrailerRecyclerView.setAdapter(mTrailerAdapter);
+        mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
         if(NetworkUtils.isNetworkAvailable(this)) {
             fetchReviews(intent.getIntExtra("id", 0));
+            fetchTrailers(intent.getIntExtra("id", 0));
         } else {
             Toast.makeText(this, "No network available.", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void fetchReviews(int movieId) {
-        new DetailActivity.FetchReviewDataTask().execute(movieId);
+        new FetchReviewsDataTask().execute(movieId);
     }
 
-    public static class FetchReviewDataTask extends AsyncTask<Integer, Void, String[]> {
+    private void fetchTrailers(int movieId) {
+        new FetchTrailersDataTask().execute(movieId);
+    }
+
+    @Override
+    public void onClick(Trailer trailer) {
+        Toast.makeText(this, trailer.getmKey(), Toast.LENGTH_SHORT).show();
+    }
+
+    public static class FetchReviewsDataTask extends AsyncTask<Integer, Void, String[]> {
 
         @Override
         protected String[] doInBackground(Integer... id) {
             if (id.length == 0) return null;
             int movieId = id[0];
 
-            URL requestUrl = NetworkUtils.buildReviewURL(movieId);
+            URL requestUrl = NetworkUtils.buildReviewsURL(movieId);
 
             try {
                 String jsonResponse = NetworkUtils
@@ -92,6 +110,37 @@ public class DetailActivity extends AppCompatActivity {
         protected void onPostExecute(String[] result) {
             try {
                 mReviewAdapter.setReviewData(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static class FetchTrailersDataTask extends AsyncTask<Integer, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(Integer... id) {
+            if (id.length == 0) return null;
+            int movieId = id[0];
+
+            URL requestUrl = NetworkUtils.buildTrailersURL(movieId);
+
+            try {
+                String jsonResponse = NetworkUtils
+                        .getResponseFromHttpUrl(requestUrl);
+
+                return new String[]{jsonResponse};
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            try {
+                mTrailerAdapter.setTrailerData(result);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
