@@ -45,7 +45,7 @@ public class DetailActivity extends AppCompatActivity {
         mMoviePosterImageView = findViewById(R.id.moviePoster_iv);
         Picasso
                 .with(this)
-                .load("http://image.tmdb.org/t/p/" + "w185/" + intent.getStringExtra("poster"))
+                .load("http://image.tmdb.org/t/p/" + "w500/" + intent.getStringExtra("poster"))
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
