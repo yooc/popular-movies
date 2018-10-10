@@ -40,7 +40,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         Picasso
                 .with(holder.mPosterImageView.getContext())
-                .load("http://image.tmdb.org/t/p/" + "w154/" + mMovieData[position].getmMoviePoster())
+                .load("http://image.tmdb.org/t/p/" + "w342/" + mMovieData[position].getmMoviePoster())
                 .error(R.drawable.ic_launcher_foreground)
                 .into(holder.mPosterImageView);
     }
@@ -61,13 +61,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         for (int i = 0; i < movieArray.length(); i++) {
             JSONObject currentMovie = movieArray.getJSONObject(i);
+            int id = currentMovie.getInt("id");
             String title = currentMovie.getString("title");
             String posterPath = currentMovie.getString("poster_path");
             String synopsis = currentMovie.getString("overview");
             String releaseDate = currentMovie.getString("release_date");
             float rating = (float) currentMovie.getDouble("vote_average");
 
-            Movie movieToAdd = new Movie(title, posterPath, synopsis, releaseDate, rating);
+            Movie movieToAdd = new Movie(id, title, posterPath, synopsis, releaseDate, rating);
 
             movieData[i] = movieToAdd;
         }
@@ -77,9 +78,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final ImageView mPosterImageView;
+        final ImageView mPosterImageView;
 
-        public MovieAdapterViewHolder(View view) {
+        MovieAdapterViewHolder(View view) {
             super(view);
             mPosterImageView = view.findViewById(R.id.posterThumbnail_iv);
             view.setOnClickListener(this);

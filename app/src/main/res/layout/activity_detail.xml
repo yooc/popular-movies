@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <ImageView
@@ -31,7 +31,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@string/rating_label" />
+            android:layout_marginEnd="3dp"
+            android:text="@string/rating_label"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/rating_tv"
@@ -50,7 +52,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@string/release_date_label" />
+            android:layout_marginEnd="3dp"
+            android:text="@string/release_date_label"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/releaseDate_tv"
@@ -62,9 +66,30 @@
         android:id="@+id/synopsis_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:textStyle="bold" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/reviews_label_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/reviews_label"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_review"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -77,18 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/trailers_label"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/reviews_label_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/reviews_label"
-        android:textSize="15sp"
-        android:textStyle="bold" />
-
 </LinearLayout>
