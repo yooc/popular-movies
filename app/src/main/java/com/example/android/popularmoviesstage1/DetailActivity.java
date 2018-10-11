@@ -1,6 +1,7 @@
 package com.example.android.popularmoviesstage1;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -82,7 +83,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     @Override
     public void onClick(Trailer trailer) {
-        Toast.makeText(this, trailer.getmKey(), Toast.LENGTH_SHORT).show();
+        Uri uri = Uri.parse("https://www.youtube.com/watch?v=" + trailer.getmKey());
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     public static class FetchReviewsDataTask extends AsyncTask<Integer, Void, String[]> {
