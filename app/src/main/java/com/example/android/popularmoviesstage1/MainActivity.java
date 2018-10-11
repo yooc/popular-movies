@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = findViewById(R.id.recyclerview_movie);
+        mRecyclerView = findViewById(R.id.movie_rv);
         mSwitch = findViewById(R.id.filter_switch);
 
         sortByRating = mSwitch.isChecked();
@@ -40,12 +40,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             }
         });
 
+        mMovieAdapter = new MovieAdapter(this);
+        mRecyclerView.setAdapter(mMovieAdapter);
+
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-
-        mMovieAdapter = new MovieAdapter(this);
-        mRecyclerView.setAdapter(mMovieAdapter);
 
         if(NetworkUtils.isNetworkAvailable(this)) {
             fetchMovies(sortByRating);
