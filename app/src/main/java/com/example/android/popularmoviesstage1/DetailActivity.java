@@ -51,17 +51,17 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .into(mMoviePosterImageView);
 
         mReviewRecyclerView = findViewById(R.id.reviews_rv);
-        LinearLayoutManager reviewsManager = new LinearLayoutManager(this);
-        mReviewRecyclerView.setLayoutManager(reviewsManager);
         mReviewAdapter = new ReviewAdapter();
         mReviewRecyclerView.setAdapter(mReviewAdapter);
+        LinearLayoutManager reviewsManager = new LinearLayoutManager(this);
+        mReviewRecyclerView.setLayoutManager(reviewsManager);
         mReviewRecyclerView.setNestedScrollingEnabled(false);
 
         mTrailerRecyclerView = findViewById(R.id.trailers_rv);
-        LinearLayoutManager trailersManager = new LinearLayoutManager(this);
-        mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerAdapter = new TrailerAdapter(this);
         mTrailerRecyclerView.setAdapter(mTrailerAdapter);
+        LinearLayoutManager trailersManager = new LinearLayoutManager(this);
+        mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
         if(NetworkUtils.isNetworkAvailable(this)) {

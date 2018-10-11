@@ -54,14 +54,15 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
         for (int i = 0; i < trailerArray.length(); i++) {
             JSONObject currentTrailer = trailerArray.getJSONObject(i);
 
-                String key = currentTrailer.getString("key");
-                String name = currentTrailer.getString("name");
+            String key = currentTrailer.getString("key");
+            String name = currentTrailer.getString("name");
 
-                Trailer trailerToAdd = new Trailer(key, name);
+            Trailer trailerToAdd = new Trailer(key, name);
 
-                trailerData[i] = trailerToAdd;
+            trailerData[i] = trailerToAdd;
         }
         this.mTrailerData = trailerData;
+        notifyDataSetChanged();
     }
 
     class TrailerAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
