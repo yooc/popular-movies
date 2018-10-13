@@ -1,6 +1,7 @@
 package com.example.android.popularmoviesstage1;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmoviesstage1.data.FavoritesDbHelper;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -19,6 +21,7 @@ import java.net.URL;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
+    private SQLiteDatabase mDatabase;
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
     private RecyclerView mReviewRecyclerView, mTrailerRecyclerView;
@@ -64,6 +67,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         LinearLayoutManager trailersManager = new LinearLayoutManager(this);
         mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
+
+        FavoritesDbHelper dbHelper = new FavoritesDbHelper(this);
+        mDatabase = dbHelper.getWritableDatabase();
 
         if(NetworkUtils.isNetworkAvailable(this)) {
             fetchReviews(intent.getIntExtra("id", 0));

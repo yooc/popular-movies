@@ -2,6 +2,7 @@ package com.example.android.popularmoviesstage1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,12 +12,15 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.android.popularmoviesstage1.data.FavoritesDbHelper;
+
 import org.json.JSONException;
 
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
+    private SQLiteDatabase mDatabase;
     private RecyclerView mRecyclerView;
     private Switch mSwitch;
     private static MovieAdapter mMovieAdapter;
@@ -46,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
+
+        FavoritesDbHelper dbHelper = new FavoritesDbHelper(this);
+        mDatabase = dbHelper.getWritableDatabase();
 
         if(NetworkUtils.isNetworkAvailable(this)) {
             fetchMovies(sortByRating);
