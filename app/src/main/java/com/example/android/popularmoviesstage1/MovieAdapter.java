@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmoviesstage1.data.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
