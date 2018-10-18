@@ -1,32 +1,37 @@
 package com.example.android.popularmoviesstage1;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.popularmoviesstage1.data.FavoritesDbHelper;
+import com.example.android.popularmoviesstage1.data.AppDatabase;
+import com.example.android.popularmoviesstage1.data.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 
 import java.net.URL;
+import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
-    private SQLiteDatabase mDatabase;
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
+    private ImageButton mFavoriteImageButton;
     private RecyclerView mReviewRecyclerView, mTrailerRecyclerView;
     private static ReviewAdapter mReviewAdapter;
     private static TrailerAdapter mTrailerAdapter;
+
+    private AppDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
+        mFavoriteImageButton = findViewById(R.id.favorite_ib);
+        mFavoriteImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFavoriteClicked();
+            }
+        });
+
         mReviewRecyclerView = findViewById(R.id.reviews_rv);
         mReviewAdapter = new ReviewAdapter();
         mReviewRecyclerView.setAdapter(mReviewAdapter);
@@ -68,10 +81,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
-        FavoritesDbHelper dbHelper = new FavoritesDbHelper(this);
-        mDatabase = dbHelper.getWritableDatabase();
+        mDatabase = AppDatabase.getInstance(getApplicationContext());
 
-        if(NetworkUtils.isNetworkAvailable(this)) {
+        if (NetworkUtils.isNetworkAvailable(this)) {
             fetchReviews(intent.getIntExtra("id", 0));
             fetchTrailers(intent.getIntExtra("id", 0));
         } else {
@@ -85,6 +97,50 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private void fetchTrailers(int movieId) {
         new FetchTrailersDataTask().execute(movieId);
+    }
+
+    private void onFavoriteClicked() {
+        final Movie[] currentFavorites = getFavorites();
+        for (final Movie movie : currentFavorites) {
+            if (movie.getmMovieId() == getIntent().getIntExtra("id", 0)) {
+                removeFromFavorites(movie);
+            } else {
+                addToFavorites(movie);
+            }
+        }
+    }
+
+    private Movie[] getFavorites() {
+        final Movie[][] favorites = {new Movie[]{}};
+        Executor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Movie> currentFavorites = mDatabase.movieDao().loadFavorites();
+                favorites[0] = (Movie[]) currentFavorites.toArray();
+            }
+        });
+        return favorites[0];
+    }
+
+    private void addToFavorites(final Movie movie) {
+        Executor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDatabase.movieDao().insertMovie(movie);
+                finish();
+                mFavoriteImageButton.setPressed(true);
+            }
+        });
+    }
+
+    private void removeFromFavorites(final Movie movie) {
+        Executor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDatabase.movieDao().deleteMovie(movie);
+                mFavoriteImageButton.setPressed(false);
+            }
+        });
     }
 
     @Override

@@ -7,7 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity(tableName = "favorites")
 public class Movie {
     @PrimaryKey(autoGenerate = true)
-    private final int id;
+    private int id;
     private final int mMovieId;
     private final String mTitle;
     private final String mMoviePoster;
