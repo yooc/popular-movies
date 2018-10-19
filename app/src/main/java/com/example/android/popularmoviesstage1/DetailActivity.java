@@ -7,11 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.example.android.popularmoviesstage1.data.AppDatabase;
 import com.example.android.popularmoviesstage1.data.Movie;
@@ -26,7 +27,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
-    private ImageButton mFavoriteImageButton;
+    private ToggleButton mFavoriteToggleButton;
     private RecyclerView mReviewRecyclerView, mTrailerRecyclerView;
     private static ReviewAdapter mReviewAdapter;
     private static TrailerAdapter mTrailerAdapter;
@@ -59,8 +60,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
-        mFavoriteImageButton = findViewById(R.id.favorite_ib);
-        mFavoriteImageButton.setOnClickListener(new View.OnClickListener() {
+        mFavoriteToggleButton = findViewById(R.id.favorite_tb);
+        mFavoriteToggleButton.setText(R.string.favorite_button);
+        mFavoriteToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onFavoriteClicked();
@@ -100,45 +102,87 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
     private void onFavoriteClicked() {
-        final Movie[] currentFavorites = getFavorites();
-        for (final Movie movie : currentFavorites) {
-            if (movie.getmMovieId() == getIntent().getIntExtra("id", 0)) {
-                removeFromFavorites(movie);
-            } else {
-                addToFavorites(movie);
-            }
+        Movie currentMovie = getCurrentMovie();
+
+        if (inFavorites(currentMovie.getMovieId())) {
+            removeFromFavorites(currentMovie);
+            Log.d("Halp", "Removed");
+        } else {
+            addToFavorites(currentMovie);
+            Log.d("Halp", "Added");
         }
     }
 
-    private Movie[] getFavorites() {
-        final Movie[][] favorites = {new Movie[]{}};
-        Executor.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<Movie> currentFavorites = mDatabase.movieDao().loadFavorites();
-                favorites[0] = (Movie[]) currentFavorites.toArray();
-            }
-        });
-        return favorites[0];
+    private Movie getCurrentMovie() {
+        return new Movie(
+                    getIntent().getIntExtra("id", 0),
+                    getIntent().getStringExtra("moviePoster"),
+                    getIntent().getStringExtra("title"),
+                    getIntent().getStringExtra("synopsis"),
+                    getIntent().getStringExtra("releaseDate"),
+                    getIntent().getFloatExtra("rating", 0)
+            );
     }
 
+    private boolean inFavorites(final int movieId) {
+        final boolean[] isAdded = {false};
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mDatabase.movieDao().findMovieById(movieId) != null) {
+                    isAdded[0] = true;
+                }
+            }
+        });
+        return isAdded[0];
+    }
+
+//    private Movie[] getFavorites() {
+//        final Movie[][] favorites = {{}};
+//        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                List<Movie> currentFavorites = mDatabase.movieDao().loadFavorites();
+//                int i = 0;
+//                for (Movie movie : currentFavorites) {
+//                    favorites[0][i] = movie;
+//                    i++;
+//                }
+//            }
+//        });
+//        return favorites[0];
+//    }
+
     private void addToFavorites(final Movie movie) {
-        Executor.getInstance().diskIO().execute(new Runnable() {
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 mDatabase.movieDao().insertMovie(movie);
                 finish();
-                mFavoriteImageButton.setPressed(true);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mFavoriteToggleButton.setPressed(true);
+                        mFavoriteToggleButton.setText(R.string.unfavorite_button);
+                    }
+                });
             }
         });
     }
 
     private void removeFromFavorites(final Movie movie) {
-        Executor.getInstance().diskIO().execute(new Runnable() {
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 mDatabase.movieDao().deleteMovie(movie);
-                mFavoriteImageButton.setPressed(false);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mFavoriteToggleButton.setPressed(false);
+                        mFavoriteToggleButton.setText(R.string.favorite_button);
+                    }
+                });
             }
         });
     }

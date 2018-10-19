@@ -2,19 +2,19 @@ package com.example.android.popularmoviesstage1;
 
 import java.util.concurrent.Executors;
 
-public class Executor {
+public class AppExecutor {
     private static final Object LOCK = new Object();
-    private static Executor mInstance;
+    private static AppExecutor mInstance;
     private final java.util.concurrent.Executor diskIO;
 
-    private Executor(java.util.concurrent.Executor diskIO) {
+    private AppExecutor(java.util.concurrent.Executor diskIO) {
         this.diskIO = diskIO;
     }
 
-    public static Executor getInstance() {
+    public static AppExecutor getInstance() {
         if (mInstance == null) {
             synchronized (LOCK) {
-                mInstance = new Executor(Executors.newSingleThreadExecutor());
+                mInstance = new AppExecutor(Executors.newSingleThreadExecutor());
             }
         }
         return mInstance;

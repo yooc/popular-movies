@@ -8,58 +8,62 @@ import android.arch.persistence.room.PrimaryKey;
 public class Movie {
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private final int mMovieId;
-    private final String mTitle;
-    private final String mMoviePoster;
-    private final String mSynopsis;
-    private final String mReleaseDate;
-    private final float mRating;
+    private final int movieId;
+    private final String title;
+    private final String moviePoster;
+    private final String synopsis;
+    private final String releaseDate;
+    private final float rating;
 
     @Ignore
-    public Movie(int mMovieId, String mTitle, String mMoviePoster, String mSynopsis, String mReleaseDate, float mRating) {
-        this.mMovieId = mMovieId;
-        this.mTitle = mTitle;
-        this.mMoviePoster = mMoviePoster;
-        this.mSynopsis = mSynopsis;
-        this.mReleaseDate = mReleaseDate;
-        this.mRating = mRating;
+    public Movie(int movieId, String title, String moviePoster, String synopsis, String releaseDate, float rating) {
+        this.movieId = movieId;
+        this.title = title;
+        this.moviePoster = moviePoster;
+        this.synopsis = synopsis;
+        this.releaseDate = releaseDate;
+        this.rating = rating;
     }
 
-    public Movie(int id, int mMovieId, String mTitle, String mMoviePoster, String mSynopsis, String mReleaseDate, float mRating) {
+    public Movie(int id, int movieId, String title, String moviePoster, String synopsis, String releaseDate, float rating) {
         this.id = id;
-        this.mMovieId = mMovieId;
-        this.mTitle = mTitle;
-        this.mMoviePoster = mMoviePoster;
-        this.mSynopsis = mSynopsis;
-        this.mReleaseDate = mReleaseDate;
-        this.mRating = mRating;
+        this.movieId = movieId;
+        this.title = title;
+        this.moviePoster = moviePoster;
+        this.synopsis = synopsis;
+        this.releaseDate = releaseDate;
+        this.rating = rating;
     }
 
     public int getId() {
         return id;
     }
 
-    public int getmMovieId() {
-        return mMovieId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getmTitle() {
-        return mTitle;
+    public int getMovieId() {
+        return movieId;
     }
 
-    public String getmMoviePoster() {
-        return mMoviePoster;
+    public String getTitle() {
+        return title;
     }
 
-    public String getmSynopsis() {
-        return mSynopsis;
+    public String getMoviePoster() {
+        return moviePoster;
     }
 
-    public String getmReleaseDate() {
-        return mReleaseDate;
+    public String getSynopsis() {
+        return synopsis;
     }
 
-    public float getmRating() {
-        return mRating;
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public float getRating() {
+        return rating;
     }
 }

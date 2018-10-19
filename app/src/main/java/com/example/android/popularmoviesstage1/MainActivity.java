@@ -67,12 +67,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Intent intent = new Intent(context, destinationActivity);
 
         intent
-                .putExtra("id", movie.getmMovieId())
-                .putExtra("title", movie.getmTitle())
-                .putExtra("rating", movie.getmRating())
-                .putExtra("releaseDate", movie.getmReleaseDate())
-                .putExtra("synopsis", movie.getmSynopsis())
-                .putExtra("poster", movie.getmMoviePoster());
+                .putExtra("id", movie.getMovieId())
+                .putExtra("title", movie.getTitle())
+                .putExtra("rating", movie.getRating())
+                .putExtra("releaseDate", movie.getReleaseDate())
+                .putExtra("synopsis", movie.getSynopsis())
+                .putExtra("poster", movie.getMoviePoster());
 
         startActivity(intent);
     }
