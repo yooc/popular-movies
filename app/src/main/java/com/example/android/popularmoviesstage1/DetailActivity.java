@@ -111,6 +111,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             addToFavorites(currentMovie);
             Log.d("Halp", "Added");
         }
+
+//        Movie[] currentFavorites = getFavorites();
     }
 
     private Movie getCurrentMovie() {
@@ -129,6 +131,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         AppExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
+//                Log.d("Hello", mDatabase.movieDao().findMovieById(movieId).getTitle());
                 if (mDatabase.movieDao().findMovieById(movieId) != null) {
                     isAdded[0] = true;
                 }
@@ -137,28 +140,27 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         return isAdded[0];
     }
 
-//    private Movie[] getFavorites() {
-//        final Movie[][] favorites = {{}};
-//        AppExecutor.getInstance().diskIO().execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                List<Movie> currentFavorites = mDatabase.movieDao().loadFavorites();
-//                int i = 0;
-//                for (Movie movie : currentFavorites) {
-//                    favorites[0][i] = movie;
-//                    i++;
-//                }
-//            }
-//        });
-//        return favorites[0];
-//    }
+    private Movie[] getFavorites() {
+        final Movie[][] favorites = {{}};
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Movie> currentFavorites = mDatabase.movieDao().loadFavorites();
+                int i = 0;
+                for (Movie movie : currentFavorites) {
+                    favorites[0][i] = movie;
+                    i++;
+                }
+            }
+        });
+        return favorites[0];
+    }
 
     private void addToFavorites(final Movie movie) {
         AppExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 mDatabase.movieDao().insertMovie(movie);
-                finish();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
