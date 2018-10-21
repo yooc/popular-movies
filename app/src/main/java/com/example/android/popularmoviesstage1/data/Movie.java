@@ -14,6 +14,8 @@ public class Movie {
     private final String synopsis;
     private final String releaseDate;
     private final float rating;
+    private final Review review;
+    private final Trailer trailer;
 
     @Ignore
     public Movie(int movieId, String title, String moviePoster, String synopsis, String releaseDate, float rating) {
@@ -65,5 +67,41 @@ public class Movie {
 
     public float getRating() {
         return rating;
+    }
+
+    private class Review {
+        private final String mAuthor;
+        private final String mContent;
+
+        public Review(String mAuthor, String mContent) {
+            this.mAuthor = mAuthor;
+            this.mContent = mContent;
+        }
+
+        public String getmAuthor() {
+            return mAuthor;
+        }
+
+        public String getmContent() {
+            return mContent;
+        }
+    }
+
+    private class Trailer {
+        private final String mKey;
+        private final String mName;
+
+        public Trailer(String mKey, String mName) {
+            this.mKey = mKey;
+            this.mName = mName;
+        }
+
+        public String getmKey() {
+            return mKey;
+        }
+
+        public String getmName() {
+            return mName;
+        }
     }
 }
