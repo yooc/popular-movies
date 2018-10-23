@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmoviesstage1.data.AppDatabase;
 import com.example.android.popularmoviesstage1.data.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -14,10 +15,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private Movie[] mMovieData;
     final private MovieAdapterOnClickHandler mClickHandler;
+    private List<Movie> mFavorites;
+
+    private AppDatabase mDatabase;
 
     public interface MovieAdapterOnClickHandler {
         void onClick(Movie movie);
@@ -30,6 +36,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
+        mDatabase = AppDatabase.getInstance(context);
         int movieListItemLayout = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(movieListItemLayout, null);
@@ -93,5 +100,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             Movie selectedMovie = mMovieData[position];
             mClickHandler.onClick(selectedMovie);
         }
+    }
+
+    private void setFavorites(List<Movie> list) {
+        mFavorites = list;
+        notifyDataSetChanged();
+    }
+
+    private void useFavoritesAsFilter() {
+        setFavorites(mDatabase.movieDao().loadFavorites());
     }
 }

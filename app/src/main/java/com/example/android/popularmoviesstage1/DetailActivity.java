@@ -25,6 +25,7 @@ import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
+    private Movie mCurrentMovie;
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
     private ToggleButton mFavoriteToggleButton;
@@ -39,29 +40,35 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Intent intent = getIntent();
+        setCurrentMovie();
+
+        mDatabase = AppDatabase.getInstance(getApplicationContext());
 
         mMovieTitleTextView = findViewById(R.id.movieTitle_tv);
-        mMovieTitleTextView.setText(intent.getStringExtra("title"));
+        mMovieTitleTextView.setText(mCurrentMovie.getTitle());
 
         mRatingTextView = findViewById(R.id.rating_tv);
-        mRatingTextView.setText(String.valueOf(intent.getFloatExtra("rating", (float) 0.0)));
+        mRatingTextView.setText(String.valueOf(mCurrentMovie.getRating()));
 
         mReleaseDateTextView = findViewById(R.id.releaseDate_tv);
-        mReleaseDateTextView.setText(intent.getStringExtra("releaseDate"));
+        mReleaseDateTextView.setText(mCurrentMovie.getReleaseDate());
 
         mSynopsisTextView = findViewById(R.id.synopsis_tv);
-        mSynopsisTextView.setText(intent.getStringExtra("synopsis"));
+        mSynopsisTextView.setText(mCurrentMovie.getSynopsis());
 
         mMoviePosterImageView = findViewById(R.id.moviePoster_iv);
         Picasso
                 .with(this)
-                .load("http://image.tmdb.org/t/p/" + "w500/" + intent.getStringExtra("poster"))
+                .load("http://image.tmdb.org/t/p/" + "w500/" + mCurrentMovie.getMoviePoster())
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
         mFavoriteToggleButton = findViewById(R.id.favorite_tb);
-        mFavoriteToggleButton.setText(R.string.favorite_button);
+        if (!inFavorites(getCurrentMovie().getMovieId())) {
+            mFavoriteToggleButton.setText(R.string.favorite_button);
+        } else {
+            mFavoriteToggleButton.setText(R.string.unfavorite_button);
+        }
         mFavoriteToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,22 +90,27 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
-        mDatabase = AppDatabase.getInstance(getApplicationContext());
-
         if (NetworkUtils.isNetworkAvailable(this)) {
-            fetchReviews(intent.getIntExtra("id", 0));
-            fetchTrailers(intent.getIntExtra("id", 0));
+            fetchReviews(mCurrentMovie.getMovieId());
+            fetchTrailers(mCurrentMovie.getMovieId());
         } else {
             Toast.makeText(this, "No network available.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void fetchReviews(int movieId) {
-        new FetchReviewsDataTask().execute(movieId);
+    private Movie getCurrentMovie() {
+        return new Movie(
+                getIntent().getIntExtra("id", 0),
+                getIntent().getStringExtra("moviePoster"),
+                getIntent().getStringExtra("title"),
+                getIntent().getStringExtra("synopsis"),
+                getIntent().getStringExtra("releaseDate"),
+                getIntent().getFloatExtra("rating", 0)
+        );
     }
 
-    private void fetchTrailers(int movieId) {
-        new FetchTrailersDataTask().execute(movieId);
+    private void setCurrentMovie() {
+        mCurrentMovie = getCurrentMovie();
     }
 
     private void onFavoriteClicked() {
@@ -111,19 +123,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             addToFavorites(currentMovie);
             Log.d("Halp", "Added");
         }
-
-//        Movie[] currentFavorites = getFavorites();
-    }
-
-    private Movie getCurrentMovie() {
-        return new Movie(
-                    getIntent().getIntExtra("id", 0),
-                    getIntent().getStringExtra("moviePoster"),
-                    getIntent().getStringExtra("title"),
-                    getIntent().getStringExtra("synopsis"),
-                    getIntent().getStringExtra("releaseDate"),
-                    getIntent().getFloatExtra("rating", 0)
-            );
     }
 
     private boolean inFavorites(final int movieId) {
@@ -131,29 +130,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         AppExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-//                Log.d("Hello", mDatabase.movieDao().findMovieById(movieId).getTitle());
                 if (mDatabase.movieDao().findMovieById(movieId) != null) {
                     isAdded[0] = true;
                 }
             }
         });
         return isAdded[0];
-    }
-
-    private Movie[] getFavorites() {
-        final Movie[][] favorites = {{}};
-        AppExecutor.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<Movie> currentFavorites = mDatabase.movieDao().loadFavorites();
-                int i = 0;
-                for (Movie movie : currentFavorites) {
-                    favorites[0][i] = movie;
-                    i++;
-                }
-            }
-        });
-        return favorites[0];
     }
 
     private void addToFavorites(final Movie movie) {
@@ -187,6 +169,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 });
             }
         });
+    }
+
+    private void fetchReviews(int movieId) {
+        new FetchReviewsDataTask().execute(movieId);
+    }
+
+    private void fetchTrailers(int movieId) {
+        new FetchTrailersDataTask().execute(movieId);
     }
 
     @Override

@@ -13,17 +13,17 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();
     private static final String DATABASE_NAME = "favorites";
-    private static AppDatabase mInstance;
+    private static AppDatabase sInstance;
 
     public static AppDatabase getInstance(Context context) {
-        if (mInstance == null) {
+        if (sInstance == null) {
             synchronized (LOCK) {
                 Log.d(LOG_TAG, "Creating new instance");
-                mInstance = databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME).build();
+                sInstance = databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME).build();
             }
         }
         Log.d(LOG_TAG, "Getting instance");
-        return mInstance;
+        return sInstance;
     }
 
     public abstract MovieDao movieDao();
