@@ -6,6 +6,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "favorites")
 public class Movie {
+
     @PrimaryKey(autoGenerate = true)
     private int id;
     private final int movieId;

@@ -21,9 +21,10 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 
 import java.net.URL;
-import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
+
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     private Movie mCurrentMovie;
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
@@ -57,6 +58,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mSynopsisTextView.setText(mCurrentMovie.getSynopsis());
 
         mMoviePosterImageView = findViewById(R.id.moviePoster_iv);
+
         Picasso
                 .with(this)
                 .load("http://image.tmdb.org/t/p/" + "w500/" + mCurrentMovie.getMoviePoster())
@@ -68,11 +70,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             mFavoriteToggleButton.setText(R.string.favorite_button);
         } else {
             mFavoriteToggleButton.setText(R.string.unfavorite_button);
+            mFavoriteToggleButton.setPressed(true);
         }
         mFavoriteToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onFavoriteClicked();
+                onFavoriteButtonClicked();
             }
         });
 
@@ -101,8 +104,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private Movie getCurrentMovie() {
         return new Movie(
                 getIntent().getIntExtra("id", 0),
-                getIntent().getStringExtra("moviePoster"),
                 getIntent().getStringExtra("title"),
+                getIntent().getStringExtra("poster"),
                 getIntent().getStringExtra("synopsis"),
                 getIntent().getStringExtra("releaseDate"),
                 getIntent().getFloatExtra("rating", 0)
@@ -113,15 +116,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mCurrentMovie = getCurrentMovie();
     }
 
-    private void onFavoriteClicked() {
+    private void onFavoriteButtonClicked() {
         Movie currentMovie = getCurrentMovie();
 
         if (inFavorites(currentMovie.getMovieId())) {
             removeFromFavorites(currentMovie);
-            Log.d("Halp", "Removed");
         } else {
             addToFavorites(currentMovie);
-            Log.d("Halp", "Added");
         }
     }
 
@@ -132,9 +133,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             public void run() {
                 if (mDatabase.movieDao().findMovieById(movieId) != null) {
                     isAdded[0] = true;
+                    Log.d(LOG_TAG, "inFavorites");
                 }
             }
         });
+        Log.d(LOG_TAG, "inFavorites value: " + isAdded[0]);
         return isAdded[0];
     }
 
@@ -143,15 +146,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             public void run() {
                 mDatabase.movieDao().insertMovie(movie);
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mFavoriteToggleButton.setPressed(true);
                         mFavoriteToggleButton.setText(R.string.unfavorite_button);
                     }
                 });
             }
         });
+        Log.d(LOG_TAG, "Added to database");
     }
 
     private void removeFromFavorites(final Movie movie) {
@@ -169,6 +173,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 });
             }
         });
+        Log.d(LOG_TAG, "Removed from database");
     }
 
     private void fetchReviews(int movieId) {

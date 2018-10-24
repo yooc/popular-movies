@@ -1,11 +1,10 @@
 package com.example.android.popularmoviesstage1.data;
 
 import android.arch.persistence.room.Database;
+import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.util.Log;
-
-import static android.arch.persistence.room.Room.databaseBuilder;
 
 @Database(entities = {Movie.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
@@ -19,7 +18,11 @@ public abstract class AppDatabase extends RoomDatabase {
         if (sInstance == null) {
             synchronized (LOCK) {
                 Log.d(LOG_TAG, "Creating new instance");
-                sInstance = databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME).build();
+                sInstance = Room.databaseBuilder(
+                        context.getApplicationContext(),
+                        AppDatabase.class,
+                        AppDatabase.DATABASE_NAME)
+                        .build();
             }
         }
         Log.d(LOG_TAG, "Getting instance");

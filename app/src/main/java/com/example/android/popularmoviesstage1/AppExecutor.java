@@ -1,26 +1,27 @@
 package com.example.android.popularmoviesstage1;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class AppExecutor {
     private static final Object LOCK = new Object();
-    private static AppExecutor mInstance;
-    private final java.util.concurrent.Executor diskIO;
+    private static AppExecutor sInstance;
+    private final Executor diskIO;
 
-    private AppExecutor(java.util.concurrent.Executor diskIO) {
+    private AppExecutor(Executor diskIO) {
         this.diskIO = diskIO;
     }
 
     public static AppExecutor getInstance() {
-        if (mInstance == null) {
+        if (sInstance == null) {
             synchronized (LOCK) {
-                mInstance = new AppExecutor(Executors.newSingleThreadExecutor());
+                sInstance = new AppExecutor(Executors.newSingleThreadExecutor());
             }
         }
-        return mInstance;
+        return sInstance;
     }
 
-    public java.util.concurrent.Executor diskIO() {
+    public Executor diskIO() {
         return diskIO;
     }
 }
