@@ -1,8 +1,11 @@
 package com.example.android.popularmoviesstage1;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,13 +14,17 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.android.popularmoviesstage1.data.AppDatabase;
 import com.example.android.popularmoviesstage1.data.Movie;
 
 import org.json.JSONException;
 
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+
+    private AppDatabase mDatabase;
 
     private RecyclerView mRecyclerView;
     private Switch mSwitch;
@@ -48,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
+
+        mDatabase = AppDatabase.getInstance(getApplicationContext());
 
         if(NetworkUtils.isNetworkAvailable(this)) {
             fetchMovies(sortByRating);
@@ -106,5 +115,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 e.printStackTrace();
             }
         }
+    }
+
+    private void fetchFavorites() {
+        LiveData<List<Movie>> favorites = mDatabase.movieDao().loadFavorites();
+        favorites.observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movies) {
+                mMovieAdapter.setFavorites(movies);
+            }
+        });
     }
 }

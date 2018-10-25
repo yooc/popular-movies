@@ -1,5 +1,6 @@
 package com.example.android.popularmoviesstage1.data;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -10,7 +11,7 @@ import java.util.List;
 @Dao
 public interface MovieDao {
     @Query("SELECT * FROM favorites")
-    List<Movie> loadFavorites();
+    LiveData<List<Movie>> loadFavorites();
 
     @Insert
     void insertMovie(Movie movie);
@@ -19,5 +20,5 @@ public interface MovieDao {
     void deleteMovie(Movie movie);
 
     @Query("SELECT * FROM favorites WHERE movieId = :movieId")
-    Movie findMovieById(int movieId);
+    LiveData<Movie> findMovieById(int movieId);
 }

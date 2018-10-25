@@ -23,8 +23,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     final private MovieAdapterOnClickHandler mClickHandler;
     private List<Movie> mFavorites;
 
-    private AppDatabase mDatabase;
-
     public interface MovieAdapterOnClickHandler {
         void onClick(Movie movie);
     }
@@ -36,7 +34,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        mDatabase = AppDatabase.getInstance(context);
         int movieListItemLayout = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(movieListItemLayout, null);
@@ -102,12 +99,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
-    private void setFavorites(List<Movie> list) {
+    void setFavorites(List<Movie> list) {
         mFavorites = list;
-        notifyDataSetChanged();
-    }
-
-    private void useFavoritesAsFilter() {
-        setFavorites(mDatabase.movieDao().loadFavorites());
     }
 }

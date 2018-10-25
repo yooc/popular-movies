@@ -1,8 +1,11 @@
 package com.example.android.popularmoviesstage1;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -128,15 +131,21 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private boolean inFavorites(final int movieId) {
         final boolean[] isAdded = {false};
-        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+
+        DetailViewModelFactory factory = new DetailViewModelFactory(mDatabase, movieId);
+        final DetailViewModel viewModel = ViewModelProviders
+                .of(this, factory)
+                .get(DetailViewModel.class);
+
+        viewModel.getMovie().observe(this, new Observer<Movie>() {
             @Override
-            public void run() {
-                if (mDatabase.movieDao().findMovieById(movieId) != null) {
-                    isAdded[0] = true;
-                    Log.d(LOG_TAG, "inFavorites");
-                }
+            public void onChanged(@Nullable Movie movie) {
+                viewModel.getMovie().removeObserver(this);
+                isAdded[0] = true;
+
             }
         });
+
         Log.d(LOG_TAG, "inFavorites value: " + isAdded[0]);
         return isAdded[0];
     }
