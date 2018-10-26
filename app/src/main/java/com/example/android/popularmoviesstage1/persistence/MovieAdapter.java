@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1;
+package com.example.android.popularmoviesstage1.persistence;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -99,7 +99,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
-    void setFavorites(List<Movie> list) {
+    public void setFavorites(List<Movie> list) {
         mFavorites = list;
     }
 }

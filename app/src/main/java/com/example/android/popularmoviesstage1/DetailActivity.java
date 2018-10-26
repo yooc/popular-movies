@@ -1,11 +1,9 @@
 package com.example.android.popularmoviesstage1;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,8 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.example.android.popularmoviesstage1.data.AppDatabase;
-import com.example.android.popularmoviesstage1.data.Movie;
+import com.example.android.popularmoviesstage1.persistence.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -37,16 +34,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private static ReviewAdapter mReviewAdapter;
     private static TrailerAdapter mTrailerAdapter;
 
-    private AppDatabase mDatabase;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
         setCurrentMovie();
-
-        mDatabase = AppDatabase.getInstance(getApplicationContext());
 
         mMovieTitleTextView = findViewById(R.id.movieTitle_tv);
         mMovieTitleTextView.setText(mCurrentMovie.getTitle());
@@ -130,58 +123,40 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
     private boolean inFavorites(final int movieId) {
-        final boolean[] isAdded = {false};
+        boolean isAdded = false;
 
-        DetailViewModelFactory factory = new DetailViewModelFactory(mDatabase, movieId);
         final DetailViewModel viewModel = ViewModelProviders
-                .of(this, factory)
+                .of(this)
                 .get(DetailViewModel.class);
 
-        viewModel.getMovie().observe(this, new Observer<Movie>() {
-            @Override
-            public void onChanged(@Nullable Movie movie) {
-                viewModel.getMovie().removeObserver(this);
-                isAdded[0] = true;
+        if (viewModel.getMovieById(movieId) != null) {
+            isAdded = true;
+        }
 
-            }
-        });
-
-        Log.d(LOG_TAG, "inFavorites value: " + isAdded[0]);
-        return isAdded[0];
+        Log.d(LOG_TAG, "inFavorites value: " + isAdded);
+        return isAdded;
     }
 
     private void addToFavorites(final Movie movie) {
-        AppExecutor.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mDatabase.movieDao().insertMovie(movie);
+        final DetailViewModel viewModel = ViewModelProviders
+                .of(this)
+                .get(DetailViewModel.class);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mFavoriteToggleButton.setText(R.string.unfavorite_button);
-                    }
-                });
-            }
-        });
+        viewModel.addToFavorite(movie);
+        mFavoriteToggleButton.setText(R.string.unfavorite_button);
+
         Log.d(LOG_TAG, "Added to database");
     }
 
     private void removeFromFavorites(final Movie movie) {
-        AppExecutor.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mDatabase.movieDao().deleteMovie(movie);
+        final DetailViewModel viewModel = ViewModelProviders
+                .of(this)
+                .get(DetailViewModel.class);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mFavoriteToggleButton.setPressed(false);
-                        mFavoriteToggleButton.setText(R.string.favorite_button);
-                    }
-                });
-            }
-        });
+        viewModel.removeFromFavorite(movie);
+        mFavoriteToggleButton.setPressed(false);
+        mFavoriteToggleButton.setText(R.string.favorite_button);
+
         Log.d(LOG_TAG, "Removed from database");
     }
 

@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1;
+package com.example.android.popularmoviesstage1.persistence;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

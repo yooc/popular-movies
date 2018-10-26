@@ -14,8 +14,9 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.android.popularmoviesstage1.data.AppDatabase;
-import com.example.android.popularmoviesstage1.data.Movie;
+import com.example.android.popularmoviesstage1.persistence.AppDatabase;
+import com.example.android.popularmoviesstage1.persistence.Movie;
+import com.example.android.popularmoviesstage1.persistence.MovieAdapter;
 
 import org.json.JSONException;
 
