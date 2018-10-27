@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.example.android.popularmoviesstage1.persistence.AppDatabase;
 import com.example.android.popularmoviesstage1.persistence.Movie;
-import com.example.android.popularmoviesstage1.persistence.MovieAdapter;
 
 import org.json.JSONException;
 

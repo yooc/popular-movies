@@ -10,9 +10,9 @@ import com.example.android.popularmoviesstage1.persistence.MovieRepository;
 public class DetailViewModel extends AndroidViewModel {
     private MovieRepository mRepository;
 
-    public DetailViewModel(Application application) {
+    public DetailViewModel(Application application, int movieId) {
         super(application);
-        mRepository = new MovieRepository(application);
+        mRepository = new MovieRepository(application, movieId);
     }
 
     public LiveData<Movie> getMovieById(int movieId) {

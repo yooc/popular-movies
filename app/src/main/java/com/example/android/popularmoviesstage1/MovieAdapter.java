@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1.persistence;
+package com.example.android.popularmoviesstage1;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,8 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.android.popularmoviesstage1.data.AppDatabase;
-import com.example.android.popularmoviesstage1.data.Movie;
+import com.example.android.popularmoviesstage1.persistence.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;

@@ -1,9 +1,13 @@
 package com.example.android.popularmoviesstage1;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -61,20 +65,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
-        mFavoriteToggleButton = findViewById(R.id.favorite_tb);
-        if (!inFavorites(getCurrentMovie().getMovieId())) {
-            mFavoriteToggleButton.setText(R.string.favorite_button);
-        } else {
-            mFavoriteToggleButton.setText(R.string.unfavorite_button);
-            mFavoriteToggleButton.setPressed(true);
-        }
-        mFavoriteToggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onFavoriteButtonClicked();
-            }
-        });
-
         mReviewRecyclerView = findViewById(R.id.reviews_rv);
         mReviewAdapter = new ReviewAdapter();
         mReviewRecyclerView.setAdapter(mReviewAdapter);
@@ -88,6 +78,20 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         LinearLayoutManager trailersManager = new LinearLayoutManager(this);
         mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
+
+        mFavoriteToggleButton = findViewById(R.id.favorite_tb);
+        if (!inFavorites(getCurrentMovie().getMovieId())) {
+            mFavoriteToggleButton.setText(R.string.favorite_button);
+        } else {
+            mFavoriteToggleButton.setText(R.string.unfavorite_button);
+            mFavoriteToggleButton.setPressed(true);
+        }
+        mFavoriteToggleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFavoriteButtonClicked();
+            }
+        });
 
         if (NetworkUtils.isNetworkAvailable(this)) {
             fetchReviews(mCurrentMovie.getMovieId());
@@ -125,11 +129,22 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private boolean inFavorites(final int movieId) {
         boolean isAdded = false;
 
+        DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), movieId);
         final DetailViewModel viewModel = ViewModelProviders
-                .of(this)
+                .of(this, factory)
                 .get(DetailViewModel.class);
 
-        if (viewModel.getMovieById(movieId) != null) {
+        final Movie[] queryResult = new Movie[1];
+
+        viewModel.getMovieById(movieId).observe(this, new Observer<Movie>() {
+            @Override
+            public void onChanged(@Nullable Movie movie) {
+                viewModel.getMovieById(movieId).removeObserver(this);
+                queryResult[0] = movie;
+            }
+        });
+
+        if (queryResult[0] != null) {
             isAdded = true;
         }
 
@@ -154,6 +169,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .get(DetailViewModel.class);
 
         viewModel.removeFromFavorite(movie);
+
         mFavoriteToggleButton.setPressed(false);
         mFavoriteToggleButton.setText(R.string.favorite_button);
 

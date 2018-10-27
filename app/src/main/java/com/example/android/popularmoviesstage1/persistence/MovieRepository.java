@@ -3,16 +3,19 @@ package com.example.android.popularmoviesstage1.persistence;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.List;
 
 public class MovieRepository {
     private MovieDao mMovieDao;
+    private LiveData<Movie> mQueryResult;
     private LiveData<List<Movie>> mFavorites;
 
-    public MovieRepository(Application application) {
+    public MovieRepository(Application application, int movieId) {
         AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
         mMovieDao = database.movieDao();
+        mQueryResult = mMovieDao.findMovieById(movieId);
         mFavorites = mMovieDao.loadFavorites();
     }
 
@@ -21,7 +24,8 @@ public class MovieRepository {
     }
 
     public LiveData<Movie> getMovieFromId(int movieId) {
-        return mMovieDao.findMovieById(movieId);
+        new queryByIdAsyncTask(mMovieDao).execute(movieId);
+        return mQueryResult;
     }
 
     public void insert(Movie movie) {
@@ -32,6 +36,23 @@ public class MovieRepository {
         new deleteAsyncTask(mMovieDao).execute(movie);
     }
 
+    private class queryByIdAsyncTask extends AsyncTask<Integer, Void, LiveData<Movie>> {
+        private MovieDao mAsyncTaskDao;
+
+        queryByIdAsyncTask(MovieDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected LiveData<Movie> doInBackground(Integer... integers) {
+            return mAsyncTaskDao.findMovieById(integers[0]);
+        }
+
+        @Override
+        protected void onPostExecute(LiveData<Movie> movieLiveData) {
+            mQueryResult = movieLiveData;
+        }
+    }
     private static class insertAsyncTask extends AsyncTask<Movie, Void, Void> {
 
         private MovieDao mAsyncTaskDao;
@@ -44,6 +65,11 @@ public class MovieRepository {
         protected Void doInBackground(final Movie... movies) {
             mAsyncTaskDao.insertMovie(movies[0]);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Log.d("Hi", "insertAsyncTask complete");
         }
     }
 
@@ -58,6 +84,11 @@ public class MovieRepository {
         protected Void doInBackground(Movie... movies) {
             mAsyncTaskDao.deleteMovie(movies[0]);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Log.d("Hi", "deleteAsyncTask complete");
         }
     }
 
