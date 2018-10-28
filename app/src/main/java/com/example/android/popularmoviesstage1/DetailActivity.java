@@ -77,12 +77,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
-        mFavoriteButton = findViewById(R.id.favorite_tb);
-        if (inFavorites(mCurrentMovie.getMovieId())) {
-            mFavoriteButton.setText(R.string.unfavorite_button);
-        } else {
-            mFavoriteButton.setText(R.string.favorite_button);
-        }
+        setFavoriteButtonText();
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,38 +109,32 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
     private void onFavoriteButtonClicked() {
-        if (inFavorites(mCurrentMovie.getMovieId())) {
+        if (mFavoriteButton.getText().equals(R.string.unfavorite_button)) {
             removeFromFavorites(mCurrentMovie);
         } else {
             addToFavorites(mCurrentMovie);
         }
     }
 
-    private boolean inFavorites(final int movieId) {
-        final boolean[] isAdded = {false};
-
-        DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), movieId);
+    private void setFavoriteButtonText() {
+        mFavoriteButton = findViewById(R.id.favorite_btn);
+        DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), mCurrentMovie.getMovieId());
         final DetailViewModel viewModel = ViewModelProviders
                 .of(this, factory)
                 .get(DetailViewModel.class);
 
-        final Movie[] queryResult = new Movie[1];
-
-        viewModel.getMovieById(movieId).observe(this, new Observer<Movie>() {
+        viewModel.getMovieById(mCurrentMovie.getMovieId()).observe(this, new Observer<Movie>() {
             @Override
             public void onChanged(@Nullable Movie movie) {
-                viewModel.getMovieById(movieId).removeObserver(this);
-                queryResult[0] = movie;
+                viewModel.getMovieById(mCurrentMovie.getMovieId()).removeObserver(this);
 
-                if (queryResult[0] != null) {
-                    isAdded[0] = true;
+                if (movie != null) {
+                    mFavoriteButton.setText(R.string.unfavorite_button);
+                } else {
+                    mFavoriteButton.setText(R.string.favorite_button);
                 }
             }
         });
-
-        Log.d(LOG_TAG, "query result: " + queryResult[0]);
-        Log.d(LOG_TAG, "inFavorites value: " + isAdded[0]);
-        return isAdded[0];
     }
 
     private void addToFavorites(final Movie movie) {
@@ -154,7 +143,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .get(DetailViewModel.class);
 
         viewModel.addToFavorite(movie);
-        mFavoriteButton.setText(R.string.unfavorite_button);
+        setFavoriteButtonText();
     }
 
     private void removeFromFavorites(final Movie movie) {
@@ -163,9 +152,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .get(DetailViewModel.class);
 
         viewModel.removeFromFavorite(movie);
-
-        mFavoriteButton.setPressed(false);
-        mFavoriteButton.setText(R.string.favorite_button);
+        setFavoriteButtonText();
     }
 
     private void fetchReviews(int movieId) {
