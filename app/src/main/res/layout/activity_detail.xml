@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
-        <ToggleButton
+        <Button
             android:id="@+id/favorite_tb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

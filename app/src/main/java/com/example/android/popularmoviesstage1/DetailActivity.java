@@ -1,8 +1,6 @@
 package com.example.android.popularmoviesstage1;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,10 +12,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.android.popularmoviesstage1.persistence.Movie;
 import com.squareup.picasso.Picasso;
@@ -33,7 +31,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private Movie mCurrentMovie;
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
-    private ToggleButton mFavoriteToggleButton;
+    private Button mFavoriteButton;
     private RecyclerView mReviewRecyclerView, mTrailerRecyclerView;
     private static ReviewAdapter mReviewAdapter;
     private static TrailerAdapter mTrailerAdapter;
@@ -79,14 +77,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
-        mFavoriteToggleButton = findViewById(R.id.favorite_tb);
-        if (!inFavorites(getCurrentMovie().getMovieId())) {
-            mFavoriteToggleButton.setText(R.string.favorite_button);
+        mFavoriteButton = findViewById(R.id.favorite_tb);
+        if (inFavorites(mCurrentMovie.getMovieId())) {
+            mFavoriteButton.setText(R.string.unfavorite_button);
         } else {
-            mFavoriteToggleButton.setText(R.string.unfavorite_button);
-            mFavoriteToggleButton.setPressed(true);
+            mFavoriteButton.setText(R.string.favorite_button);
         }
-        mFavoriteToggleButton.setOnClickListener(new View.OnClickListener() {
+        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onFavoriteButtonClicked();
@@ -117,17 +114,15 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
     private void onFavoriteButtonClicked() {
-        Movie currentMovie = getCurrentMovie();
-
-        if (inFavorites(currentMovie.getMovieId())) {
-            removeFromFavorites(currentMovie);
+        if (inFavorites(mCurrentMovie.getMovieId())) {
+            removeFromFavorites(mCurrentMovie);
         } else {
-            addToFavorites(currentMovie);
+            addToFavorites(mCurrentMovie);
         }
     }
 
     private boolean inFavorites(final int movieId) {
-        boolean isAdded = false;
+        final boolean[] isAdded = {false};
 
         DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), movieId);
         final DetailViewModel viewModel = ViewModelProviders
@@ -141,15 +136,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             public void onChanged(@Nullable Movie movie) {
                 viewModel.getMovieById(movieId).removeObserver(this);
                 queryResult[0] = movie;
+
+                if (queryResult[0] != null) {
+                    isAdded[0] = true;
+                }
             }
         });
 
-        if (queryResult[0] != null) {
-            isAdded = true;
-        }
-
-        Log.d(LOG_TAG, "inFavorites value: " + isAdded);
-        return isAdded;
+        Log.d(LOG_TAG, "query result: " + queryResult[0]);
+        Log.d(LOG_TAG, "inFavorites value: " + isAdded[0]);
+        return isAdded[0];
     }
 
     private void addToFavorites(final Movie movie) {
@@ -158,9 +154,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .get(DetailViewModel.class);
 
         viewModel.addToFavorite(movie);
-        mFavoriteToggleButton.setText(R.string.unfavorite_button);
-
-        Log.d(LOG_TAG, "Added to database");
+        mFavoriteButton.setText(R.string.unfavorite_button);
     }
 
     private void removeFromFavorites(final Movie movie) {
@@ -170,10 +164,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         viewModel.removeFromFavorite(movie);
 
-        mFavoriteToggleButton.setPressed(false);
-        mFavoriteToggleButton.setText(R.string.favorite_button);
-
-        Log.d(LOG_TAG, "Removed from database");
+        mFavoriteButton.setPressed(false);
+        mFavoriteButton.setText(R.string.favorite_button);
     }
 
     private void fetchReviews(int movieId) {
