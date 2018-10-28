@@ -109,7 +109,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
     private void onFavoriteButtonClicked() {
-        if (mFavoriteButton.getText().equals(R.string.unfavorite_button)) {
+        if (mFavoriteButton.getText().equals(getString(R.string.unfavorite_button))) {
             removeFromFavorites(mCurrentMovie);
         } else {
             addToFavorites(mCurrentMovie);
@@ -143,7 +143,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .get(DetailViewModel.class);
 
         viewModel.addToFavorite(movie);
-        setFavoriteButtonText();
+        mFavoriteButton.setText(R.string.unfavorite_button);
     }
 
     private void removeFromFavorites(final Movie movie) {
@@ -152,7 +152,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .get(DetailViewModel.class);
 
         viewModel.removeFromFavorite(movie);
-        setFavoriteButtonText();
+        mFavoriteButton.setText(R.string.favorite_button);
     }
 
     private void fetchReviews(int movieId) {
