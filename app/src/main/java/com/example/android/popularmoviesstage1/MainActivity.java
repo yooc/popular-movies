@@ -1,8 +1,11 @@
 package com.example.android.popularmoviesstage1;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,11 +14,17 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.android.popularmoviesstage1.persistence.AppDatabase;
+import com.example.android.popularmoviesstage1.persistence.Movie;
+
 import org.json.JSONException;
 
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+
+    private AppDatabase mDatabase;
 
     private RecyclerView mRecyclerView;
     private Switch mSwitch;
@@ -47,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
+        mDatabase = AppDatabase.getInstance(getApplicationContext());
+
         if(NetworkUtils.isNetworkAvailable(this)) {
             fetchMovies(sortByRating);
         } else {
@@ -65,12 +76,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Intent intent = new Intent(context, destinationActivity);
 
         intent
-                .putExtra("id", movie.getmId())
-                .putExtra("title", movie.getmTitle())
-                .putExtra("rating", movie.getmRating())
-                .putExtra("releaseDate", movie.getmReleaseDate())
-                .putExtra("synopsis", movie.getmSynopsis())
-                .putExtra("poster", movie.getmMoviePoster());
+                .putExtra("id", movie.getMovieId())
+                .putExtra("title", movie.getTitle())
+                .putExtra("rating", movie.getRating())
+                .putExtra("releaseDate", movie.getReleaseDate())
+                .putExtra("synopsis", movie.getSynopsis())
+                .putExtra("poster", movie.getMoviePoster());
 
         startActivity(intent);
     }
@@ -104,5 +115,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 e.printStackTrace();
             }
         }
+    }
+
+    private void fetchFavorites() {
+        LiveData<List<Movie>> favorites = mDatabase.movieDao().loadFavorites();
+        favorites.observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movies) {
+                mMovieAdapter.setFavorites(movies);
+            }
+        });
     }
 }

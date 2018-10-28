@@ -7,16 +7,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmoviesstage1.persistence.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private Movie[] mMovieData;
     final private MovieAdapterOnClickHandler mClickHandler;
+    private List<Movie> mFavorites;
 
     public interface MovieAdapterOnClickHandler {
         void onClick(Movie movie);
@@ -40,7 +44,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         Picasso
                 .with(holder.mPosterImageView.getContext())
-                .load("http://image.tmdb.org/t/p/" + "w342/" + mMovieData[position].getmMoviePoster())
+                .load("http://image.tmdb.org/t/p/" + "w342/" + mMovieData[position].getMoviePoster())
                 .error(R.drawable.ic_launcher_foreground)
                 .into(holder.mPosterImageView);
     }
@@ -92,5 +96,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             Movie selectedMovie = mMovieData[position];
             mClickHandler.onClick(selectedMovie);
         }
+    }
+
+    public void setFavorites(List<Movie> list) {
+        mFavorites = list;
     }
 }

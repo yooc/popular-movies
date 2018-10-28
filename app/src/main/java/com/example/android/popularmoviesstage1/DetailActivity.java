@@ -1,16 +1,23 @@
 package com.example.android.popularmoviesstage1;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmoviesstage1.persistence.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -19,8 +26,12 @@ import java.net.URL;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
+    private Movie mCurrentMovie;
     private TextView mMovieTitleTextView, mRatingTextView, mReleaseDateTextView, mSynopsisTextView;
     private ImageView mMoviePosterImageView;
+    private Button mFavoriteButton;
     private RecyclerView mReviewRecyclerView, mTrailerRecyclerView;
     private static ReviewAdapter mReviewAdapter;
     private static TrailerAdapter mTrailerAdapter;
@@ -30,24 +41,25 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Intent intent = getIntent();
+        setCurrentMovie();
 
         mMovieTitleTextView = findViewById(R.id.movieTitle_tv);
-        mMovieTitleTextView.setText(intent.getStringExtra("title"));
+        mMovieTitleTextView.setText(mCurrentMovie.getTitle());
 
         mRatingTextView = findViewById(R.id.rating_tv);
-        mRatingTextView.setText(String.valueOf(intent.getFloatExtra("rating", (float) 0.0)));
+        mRatingTextView.setText(String.valueOf(mCurrentMovie.getRating()));
 
         mReleaseDateTextView = findViewById(R.id.releaseDate_tv);
-        mReleaseDateTextView.setText(intent.getStringExtra("releaseDate"));
+        mReleaseDateTextView.setText(mCurrentMovie.getReleaseDate());
 
         mSynopsisTextView = findViewById(R.id.synopsis_tv);
-        mSynopsisTextView.setText(intent.getStringExtra("synopsis"));
+        mSynopsisTextView.setText(mCurrentMovie.getSynopsis());
 
         mMoviePosterImageView = findViewById(R.id.moviePoster_iv);
+
         Picasso
                 .with(this)
-                .load("http://image.tmdb.org/t/p/" + "w500/" + intent.getStringExtra("poster"))
+                .load("http://image.tmdb.org/t/p/" + "w500/" + mCurrentMovie.getMoviePoster())
                 .error(R.drawable.ic_launcher_foreground)
                 .into(mMoviePosterImageView);
 
@@ -65,12 +77,82 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRecyclerView.setLayoutManager(trailersManager);
         mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
-        if(NetworkUtils.isNetworkAvailable(this)) {
-            fetchReviews(intent.getIntExtra("id", 0));
-            fetchTrailers(intent.getIntExtra("id", 0));
+        setFavoriteButtonText();
+        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFavoriteButtonClicked();
+            }
+        });
+
+        if (NetworkUtils.isNetworkAvailable(this)) {
+            fetchReviews(mCurrentMovie.getMovieId());
+            fetchTrailers(mCurrentMovie.getMovieId());
         } else {
             Toast.makeText(this, "No network available.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private Movie getCurrentMovie() {
+        return new Movie(
+                getIntent().getIntExtra("id", 0),
+                getIntent().getStringExtra("title"),
+                getIntent().getStringExtra("poster"),
+                getIntent().getStringExtra("synopsis"),
+                getIntent().getStringExtra("releaseDate"),
+                getIntent().getFloatExtra("rating", 0)
+        );
+    }
+
+    private void setCurrentMovie() {
+        mCurrentMovie = getCurrentMovie();
+    }
+
+    private void onFavoriteButtonClicked() {
+        if (mFavoriteButton.getText().equals(getString(R.string.unfavorite_button))) {
+            removeFromFavorites(mCurrentMovie);
+        } else {
+            addToFavorites(mCurrentMovie);
+        }
+    }
+
+    private void setFavoriteButtonText() {
+        mFavoriteButton = findViewById(R.id.favorite_btn);
+        DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), mCurrentMovie.getMovieId());
+        final DetailViewModel viewModel = ViewModelProviders
+                .of(this, factory)
+                .get(DetailViewModel.class);
+
+        viewModel.getMovieById(mCurrentMovie.getMovieId()).observe(this, new Observer<Movie>() {
+            @Override
+            public void onChanged(@Nullable Movie movie) {
+                viewModel.getMovieById(mCurrentMovie.getMovieId()).removeObserver(this);
+
+                if (movie != null) {
+                    mFavoriteButton.setText(R.string.unfavorite_button);
+                } else {
+                    mFavoriteButton.setText(R.string.favorite_button);
+                }
+            }
+        });
+    }
+
+    private void addToFavorites(final Movie movie) {
+        final DetailViewModel viewModel = ViewModelProviders
+                .of(this)
+                .get(DetailViewModel.class);
+
+        viewModel.addToFavorite(movie);
+        mFavoriteButton.setText(R.string.unfavorite_button);
+    }
+
+    private void removeFromFavorites(final Movie movie) {
+        final DetailViewModel viewModel = ViewModelProviders
+                .of(this)
+                .get(DetailViewModel.class);
+
+        viewModel.removeFromFavorite(movie);
+        mFavoriteButton.setText(R.string.favorite_button);
     }
 
     private void fetchReviews(int movieId) {
