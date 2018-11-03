@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1.persistence;
+package com.example.android.popularmoviesstage1.data;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
@@ -8,7 +8,6 @@ import android.util.Log;
 import java.util.List;
 
 public class MovieRepository {
-
     private static final String LOG_TAG = MovieRepository.class.getSimpleName();
 
     private MovieDao mMovieDao;
@@ -19,26 +18,28 @@ public class MovieRepository {
         AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
         mMovieDao = database.movieDao();
         mQueryResult = mMovieDao.findMovieById(movieId);
+    }
+
+    public MovieRepository(Application application) {
+        AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
+        mMovieDao = database.movieDao();
         mFavorites = mMovieDao.loadFavorites();
     }
 
-    LiveData<List<Movie>> getFavorites() {
+    public LiveData<List<Movie>> getFavorites() {
         return mFavorites;
     }
 
     public LiveData<Movie> getMovieFromId(int movieId) {
-//        new queryByIdAsyncTask(mMovieDao).execute(movieId);
         new queryByIdAsyncTask(mMovieDao).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, movieId);
         return mQueryResult;
     }
 
     public void insert(Movie movie) {
-//        new insertAsyncTask(mMovieDao).execute(movie);
         new insertAsyncTask(mMovieDao).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, movie);
     }
 
     public void delete(Movie movie) {
-//        new deleteAsyncTask(mMovieDao).execute(movie);
         new deleteAsyncTask(mMovieDao).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, movie);
     }
 
@@ -88,7 +89,7 @@ public class MovieRepository {
 
         @Override
         protected Void doInBackground(Movie... movies) {
-            mAsyncTaskDao.deleteMovie(movies[0]);
+            mAsyncTaskDao.deleteMovie(movies[0].getMovieId());
             return null;
         }
 

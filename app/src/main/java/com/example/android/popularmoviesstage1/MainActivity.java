@@ -1,7 +1,7 @@
 package com.example.android.popularmoviesstage1;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,12 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.CompoundButton;
-import android.widget.Switch;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.android.popularmoviesstage1.persistence.AppDatabase;
-import com.example.android.popularmoviesstage1.persistence.Movie;
+import com.example.android.popularmoviesstage1.data.AppDatabase;
+import com.example.android.popularmoviesstage1.data.Movie;
+import com.facebook.stetho.Stetho;
 
 import org.json.JSONException;
 
@@ -24,30 +26,26 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
-    private AppDatabase mDatabase;
+    private static String FILTER_EXTRA = "filter";
 
     private RecyclerView mRecyclerView;
-    private Switch mSwitch;
     private static MovieAdapter mMovieAdapter;
 
-    private Boolean sortByRating;
+    private String mFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState != null) {
+            mFilter = savedInstanceState.getString(FILTER_EXTRA);
+        } else {
+            mFilter = getString(R.string.popular_menu_item);
+        }
+
         mRecyclerView = findViewById(R.id.movie_rv);
-        mSwitch = findViewById(R.id.filter_switch);
-
-        sortByRating = mSwitch.isChecked();
-
-        mSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                fetchMovies(isChecked);
-            }
-        });
 
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
@@ -56,17 +54,61 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mDatabase = AppDatabase.getInstance(getApplicationContext());
-
-        if(NetworkUtils.isNetworkAvailable(this)) {
-            fetchMovies(sortByRating);
+        if (NetworkUtils.isNetworkAvailable(this)) {
+            fetchMovies(mFilter);
         } else {
             Toast.makeText(this, "No network available.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void fetchMovies(Boolean isChecked) {
-        new FetchMovieDataTask().execute(isChecked);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.filters_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.by_popularity) {
+            mFilter = getString(R.string.popular_menu_item);
+            fetchMovies(mFilter);
+
+            return true;
+        }
+        if (itemId == R.id.by_rating) {
+            mFilter = getString(R.string.rating_menu_item);
+            fetchMovies(mFilter);
+            return true;
+        }
+
+        if (itemId == R.id.by_favorites) {
+            mFilter = getString(R.string.favorites_menu_item);
+            fetchMovies(mFilter);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void fetchMovies(String filter) {
+        if (filter.equals(getString(R.string.favorites_menu_item))) {
+            MainModelViewFactory factory = new MainModelViewFactory(getApplication(), filter);
+            final MainViewModel viewModel = ViewModelProviders
+                    .of(this, factory)
+                    .get(MainViewModel.class);
+
+            viewModel.getFavorites().observe(this, new Observer<List<Movie>>() {
+                @Override
+                public void onChanged(@Nullable List<Movie> movies) {
+                    mMovieAdapter.setFavoritesAsMovieData(movies);
+                }
+            });
+        } else {
+            new FetchMovieDataTask().execute(filter);
+        }
     }
 
     @Override
@@ -86,14 +128,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(intent);
     }
 
-    public static class FetchMovieDataTask extends AsyncTask<Boolean, Void, String[]> {
+    public class FetchMovieDataTask extends AsyncTask<String, Void, String[]> {
 
         @Override
-        protected String[] doInBackground(Boolean... booleans) {
-            if (booleans.length == 0) return null;
-            Boolean filterByRating = booleans[0];
+        protected String[] doInBackground(String... strings) {
+            if (strings.length == 0) return null;
+            String filter = strings[0];
 
-            URL requestUrl = NetworkUtils.buildListURL(filterByRating);
+            URL requestUrl = NetworkUtils.buildListURL(filter);
 
             try {
                 String jsonResponse = NetworkUtils
@@ -111,19 +153,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         protected void onPostExecute(String[] result) {
             try {
                 mMovieAdapter.setMovieData(result);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void fetchFavorites() {
-        LiveData<List<Movie>> favorites = mDatabase.movieDao().loadFavorites();
-        favorites.observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(@Nullable List<Movie> movies) {
-                mMovieAdapter.setFavorites(movies);
-            }
-        });
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(FILTER_EXTRA, mFilter);
     }
 }

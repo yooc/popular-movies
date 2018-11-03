@@ -6,17 +6,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Switch
-        android:id="@+id/filter_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginBottom="8dp"
-        android:showText="true"
-        android:text="Filter By"
-        android:textOff="Popularity"
-        android:textOn="Rating" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/movie_rv"
         android:layout_width="match_parent"

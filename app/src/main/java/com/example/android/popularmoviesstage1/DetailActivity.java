@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.popularmoviesstage1.persistence.Movie;
+import com.example.android.popularmoviesstage1.data.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -197,6 +197,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         protected void onPostExecute(String[] result) {
             try {
                 mReviewAdapter.setReviewData(result);
+                Log.d(LOG_TAG, "Set Review Data");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -228,6 +229,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         protected void onPostExecute(String[] result) {
             try {
                 mTrailerAdapter.setTrailerData(result);
+                Log.d(LOG_TAG, "Set Trailer Data");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

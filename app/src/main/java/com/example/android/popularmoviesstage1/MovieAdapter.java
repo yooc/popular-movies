@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.android.popularmoviesstage1.persistence.Movie;
+import com.example.android.popularmoviesstage1.data.Movie;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -20,7 +20,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private Movie[] mMovieData;
     final private MovieAdapterOnClickHandler mClickHandler;
-    private List<Movie> mFavorites;
 
     public interface MovieAdapterOnClickHandler {
         void onClick(Movie movie);
@@ -65,14 +64,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         for (int i = 0; i < movieArray.length(); i++) {
             JSONObject currentMovie = movieArray.getJSONObject(i);
-            int id = currentMovie.getInt("id");
+            int movieId = currentMovie.getInt("id");
             String title = currentMovie.getString("title");
             String posterPath = currentMovie.getString("poster_path");
             String synopsis = currentMovie.getString("overview");
             String releaseDate = currentMovie.getString("release_date");
             float rating = (float) currentMovie.getDouble("vote_average");
 
-            Movie movieToAdd = new Movie(id, title, posterPath, synopsis, releaseDate, rating);
+            Movie movieToAdd = new Movie(movieId, title, posterPath, synopsis, releaseDate, rating);
 
             movieData[i] = movieToAdd;
         }
@@ -98,7 +97,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
-    public void setFavorites(List<Movie> list) {
-        mFavorites = list;
+    public void setFavoritesAsMovieData(List<Movie> list) {
+        mMovieData = list.toArray(new Movie[]{});
+        notifyDataSetChanged();
     }
 }
