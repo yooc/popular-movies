@@ -10,12 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.android.popularmoviesstage1.data.AppDatabase;
 import com.example.android.popularmoviesstage1.data.Movie;
 import com.facebook.stetho.Stetho;
 
@@ -25,7 +25,7 @@ import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
-
+    private static String LOG_TAG = MainActivity.class.getSimpleName();
     private static String FILTER_EXTRA = "filter";
 
     private RecyclerView mRecyclerView;
@@ -37,13 +37,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Stetho.initializeWithDefaults(this);
-        setContentView(R.layout.activity_main);
-
+        
         if (savedInstanceState != null) {
-            mFilter = savedInstanceState.getString(FILTER_EXTRA);
+            mFilter = ((String) savedInstanceState.get(FILTER_EXTRA));
         } else {
             mFilter = getString(R.string.popular_menu_item);
         }
+
+        setContentView(R.layout.activity_main);
 
         mRecyclerView = findViewById(R.id.movie_rv);
 
@@ -95,14 +96,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private void fetchMovies(String filter) {
         if (filter.equals(getString(R.string.favorites_menu_item))) {
-            MainModelViewFactory factory = new MainModelViewFactory(getApplication(), filter);
             final MainViewModel viewModel = ViewModelProviders
-                    .of(this, factory)
+                    .of(this)
                     .get(MainViewModel.class);
 
             viewModel.getFavorites().observe(this, new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(@Nullable List<Movie> movies) {
+                    Log.d(LOG_TAG, "Set Favorites as movie data");
                     mMovieAdapter.setFavoritesAsMovieData(movies);
                 }
             });
@@ -162,8 +163,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         outState.putString(FILTER_EXTRA, mFilter);
+        super.onSaveInstanceState(outState);
     }
 }

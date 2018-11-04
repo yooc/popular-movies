@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Popular Movies Stage 1</string>
+    <string name="app_name">Popular Movies</string>
 
     <string name="rating_label">Rating:</string>
     <string name="release_date_label">Release Date:</string>

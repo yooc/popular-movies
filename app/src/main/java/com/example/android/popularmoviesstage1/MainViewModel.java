@@ -11,12 +11,10 @@ import java.util.List;
 
 public class MainViewModel extends AndroidViewModel {
     private MovieRepository mRepository;
-    private String mFilter;
 
-    public MainViewModel(Application application, String filter) {
+    public MainViewModel(Application application) {
         super(application);
         mRepository = new MovieRepository(application);
-        mFilter = filter;
     }
 
     public LiveData<List<Movie>> getFavorites() {
