@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Stetho.initializeWithDefaults(this);
-        
+
         if (savedInstanceState != null) {
             mFilter = ((String) savedInstanceState.get(FILTER_EXTRA));
         } else {
