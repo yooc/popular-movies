@@ -27,6 +27,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
     private static String LOG_TAG = MainActivity.class.getSimpleName();
     private static String FILTER_EXTRA = "filter";
+    private static String RECYCLER_VIEW_STATE_EXTRA = "recyclerView state";
 
     private RecyclerView mRecyclerView;
     private static MovieAdapter mMovieAdapter;
@@ -50,15 +51,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
+        GridLayoutManager layoutManager = new GridLayoutManager(
+                this,
+                3,
+                GridLayoutManager.VERTICAL,
+                false
+        );
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
+        if (savedInstanceState != null) {
+            layoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(RECYCLER_VIEW_STATE_EXTRA));
+        }
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
         if (NetworkUtils.isNetworkAvailable(this)) {
             fetchMovies(mFilter);
         } else {
-            Toast.makeText(this, "No network available.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No network available.", Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -164,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(FILTER_EXTRA, mFilter);
+        outState.putParcelable(RECYCLER_VIEW_STATE_EXTRA, mRecyclerView.getLayoutManager().onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
 }
