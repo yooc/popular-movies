@@ -4,8 +4,8 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
-import com.example.android.popularmoviesstage1.persistence.Movie;
-import com.example.android.popularmoviesstage1.persistence.MovieRepository;
+import com.example.android.popularmoviesstage1.data.Movie;
+import com.example.android.popularmoviesstage1.data.MovieRepository;
 
 public class DetailViewModel extends AndroidViewModel {
     private MovieRepository mRepository;

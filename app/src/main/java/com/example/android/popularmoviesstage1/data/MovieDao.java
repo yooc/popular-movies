@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1.persistence;
+package com.example.android.popularmoviesstage1.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -14,11 +14,11 @@ public interface MovieDao {
     @Query("SELECT * FROM favorites")
     LiveData<List<Movie>> loadFavorites();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertMovie(Movie movie);
 
-    @Delete
-    void deleteMovie(Movie movie);
+    @Query("DELETE FROM favorites WHERE movieId = :movieId")
+    void deleteMovie(int movieId);
 
     @Query("SELECT * FROM favorites WHERE movieId = :movieId")
     LiveData<Movie> findMovieById(int movieId);

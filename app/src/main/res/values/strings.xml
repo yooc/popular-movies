@@ -1,9 +1,14 @@
 <resources>
-    <string name="app_name">Popular Movies Stage 1</string>
+    <string name="app_name">Popular Movies</string>
+
     <string name="rating_label">Rating:</string>
     <string name="release_date_label">Release Date:</string>
     <string name="trailers_label">Trailers</string>
     <string name="reviews_label">Reviews</string>
     <string name="favorite_button">Add To Favorites</string>
     <string name="unfavorite_button">Remove From Favorites</string>
+
+    <string name="popular_menu_item">Most Popular</string>
+    <string name="rating_menu_item">Best Rated</string>
+    <string name="favorites_menu_item">My Favorites</string>
 </resources>

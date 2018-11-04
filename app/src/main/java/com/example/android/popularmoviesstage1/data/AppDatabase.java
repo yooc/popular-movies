@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1.persistence;
+package com.example.android.popularmoviesstage1.data;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;

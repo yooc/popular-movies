@@ -1,6 +1,7 @@
 package com.example.android.popularmoviesstage1;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -20,11 +21,11 @@ class NetworkUtils {
     private static final String TRAILERS_URL = "videos";
     private static final String API_KEY = BuildConfig.TMDB_API_KEY;
 
-    static URL buildListURL(Boolean filterByRating) {
+    static URL buildListURL(String filter) {
         //Build Uri based on whether is sorting type, get poster, etc
         String filterURL;
 
-        if (filterByRating) {
+        if (filter.equals("Best Rated")) {
             filterURL = BASE_URL + BY_RATING;
         } else {
             filterURL = BASE_URL + BY_POPULARITY;

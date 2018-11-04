@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1.persistence;
+package com.example.android.popularmoviesstage1.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
@@ -16,7 +16,6 @@ public class Movie {
     private final String releaseDate;
     private final float rating;
 
-    @Ignore
     public Movie(int movieId, String title, String moviePoster, String synopsis, String releaseDate, float rating) {
         this.movieId = movieId;
         this.title = title;
@@ -26,6 +25,7 @@ public class Movie {
         this.rating = rating;
     }
 
+    @Ignore
     public Movie(int id, int movieId, String title, String moviePoster, String synopsis, String releaseDate, float rating) {
         this.id = id;
         this.movieId = movieId;
