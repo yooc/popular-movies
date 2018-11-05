@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView = findViewById(R.id.movie_rv);
 
         mMovieAdapter = new MovieAdapter(this);
-        mRecyclerView.setAdapter(mMovieAdapter);
+
         GridLayoutManager layoutManager = new GridLayoutManager(
                 this,
                 3,
@@ -59,9 +60,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         );
 
         if (savedInstanceState != null) {
-            layoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(RECYCLER_VIEW_STATE_EXTRA));
+            Parcelable state = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE_EXTRA);
+            layoutManager.onRestoreInstanceState(state);
         }
+
         mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mMovieAdapter);
         mRecyclerView.setHasFixedSize(true);
 
         if (NetworkUtils.isNetworkAvailable(this)) {
@@ -174,7 +178,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(FILTER_EXTRA, mFilter);
-        outState.putParcelable(RECYCLER_VIEW_STATE_EXTRA, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        Parcelable state = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(RECYCLER_VIEW_STATE_EXTRA, state);
         super.onSaveInstanceState(outState);
     }
 }
