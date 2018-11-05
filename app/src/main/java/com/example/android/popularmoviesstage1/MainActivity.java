@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private String mFilter;
 
+    private Parcelable mRecyclerViewState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         if (savedInstanceState != null) {
             mFilter = ((String) savedInstanceState.get(FILTER_EXTRA));
+            mRecyclerViewState = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE_EXTRA);
         } else {
             mFilter = getString(R.string.popular_menu_item);
         }
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView = findViewById(R.id.movie_rv);
 
         mMovieAdapter = new MovieAdapter(this);
+        mRecyclerView.setAdapter(mMovieAdapter);
 
         GridLayoutManager layoutManager = new GridLayoutManager(
                 this,
@@ -58,14 +62,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 GridLayoutManager.VERTICAL,
                 false
         );
-
-        if (savedInstanceState != null) {
-            Parcelable state = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE_EXTRA);
-            layoutManager.onRestoreInstanceState(state);
-        }
-
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(mMovieAdapter);
         mRecyclerView.setHasFixedSize(true);
 
         if (NetworkUtils.isNetworkAvailable(this)) {
@@ -119,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 public void onChanged(@Nullable List<Movie> movies) {
                     Log.d(LOG_TAG, "Set Favorites as movie data");
                     mMovieAdapter.setFavoritesAsMovieData(movies);
+                    if (mRecyclerViewState != null) {
+                        mRecyclerView.getLayoutManager().onRestoreInstanceState(mRecyclerViewState);
+                        Log.d(LOG_TAG, "Restore state");
+                    }
                 }
             });
         } else {
@@ -168,7 +169,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         protected void onPostExecute(String[] result) {
             try {
                 mMovieAdapter.setMovieData(result);
-
+                if (mRecyclerViewState != null) {
+                    mRecyclerView.getLayoutManager().onRestoreInstanceState(mRecyclerViewState);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -178,8 +181,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(FILTER_EXTRA, mFilter);
+
         Parcelable state = mRecyclerView.getLayoutManager().onSaveInstanceState();
         outState.putParcelable(RECYCLER_VIEW_STATE_EXTRA, state);
+
         super.onSaveInstanceState(outState);
     }
 }
